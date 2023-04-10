@@ -3,6 +3,7 @@
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DishController;
 use App\Http\Controllers\NewPasswordController;
+use App\Http\Controllers\OrderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -45,7 +46,7 @@ Route::group(['middleware' => ['auth:sanctum']], function()
     Route::delete('/categories/{id}/delete', [CategoryController::class, 'destroy']);
     Route::post('/categories/{id}/restore', [CategoryController::class, 'restore']);
 
-    //DISHED
+    //DISHES
     Route::get('/dishes', [DishController::class, 'index']);
     Route::post('/dishes', [DishController::class, 'store']);
     Route::get('/dishes/{id}', [DishController::class, 'show']);
@@ -53,6 +54,15 @@ Route::group(['middleware' => ['auth:sanctum']], function()
     Route::put('/dishes/{id}/update', [DishController::class, 'update']);
     Route::delete('/dishes/{id}/delete', [DishController::class, 'destroy']);
     Route::post('/dishes/{id}/restore', [DishController::class, 'restore']);
+
+    //ORDERS
+    Route::get('/orders', [OrderController::class, 'index']);
+    Route::post('/orders', [OrderController::class, 'store']);
+    Route::get('/orders/{id}', [OrderController::class, 'show']);
+    Route::get('/orders/{id}/edit', [OrderController::class, 'edit']);
+    Route::put('/orders/{id}/update', [OrderController::class, 'update']);
+    Route::delete('/orders/{id}/delete', [OrderController::class, 'destroy']);
+    Route::post('/orders/{id}/restore', [OrderController::class, 'restore']);
 });
 
 

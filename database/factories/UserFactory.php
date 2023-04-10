@@ -23,7 +23,7 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => Str::random(20),
             'remember_token' => Str::random(10),
-            'pin_code' => fake()->numberBetween(1000, 9999),
+            'pin_code' => fake()->unique()->numberBetween(1000, 9999),
             'role_id' => fake()->numberBetween(1, 3),
         ];
     }

@@ -3,12 +3,13 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
  */
-class CategoryFactory extends Factory
+class DishFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -20,6 +21,10 @@ class CategoryFactory extends Factory
         return [
             'name' => fake()->unique()->domainWord(),
             'img' => fake()->imageUrl(),
+            'calories' => fake()->randomDigitNotNull,
+            'price' => fake()->randomDigitNotNull,
+            'category_id' => fake()->numberBetween(1, DB::table('roles')->get()->count()),
+            'composition' => fake()->text(200)
         ];
     }
 

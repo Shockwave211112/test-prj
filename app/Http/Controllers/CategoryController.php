@@ -29,7 +29,7 @@ class CategoryController extends Controller
         }
         if(str_contains($request->getQueryString(), "orderBy=name"))
         {
-            $query->orderBy('name', $sort)->paginate(5);
+            $query->orderBy('name', $sort);
         }
         $categories = $query->paginate(10);
         return $categories;

@@ -20,7 +20,6 @@ class UserFilter extends AbstractFilter
     }
     public function name(Builder $builder, $value)
     {
-        dd(11);
         $builder->where('name', 'like', "%{$value}%");
     }
     public function email(Builder $builder, $value)
