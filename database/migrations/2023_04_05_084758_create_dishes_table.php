@@ -21,10 +21,8 @@ return new class extends Migration
 
             $table->unsignedBigInteger('category_id');
             $table->index('category_id', 'dish_category_idx');
-            $table->foreign('category_id', 'dish_category_fk')->on('categories')->references('id')->onDelete('cascade');
-
+            $table->foreign('category_id', 'dish_category_fk')->references('id')->on('categories')->constrained()->onDelete('cascade');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 

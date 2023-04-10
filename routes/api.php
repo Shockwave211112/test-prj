@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DishController;
 use App\Http\Controllers\NewPasswordController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -43,6 +44,15 @@ Route::group(['middleware' => ['auth:sanctum']], function()
     Route::put('/categories/{id}/update', [CategoryController::class, 'update']);
     Route::delete('/categories/{id}/delete', [CategoryController::class, 'destroy']);
     Route::post('/categories/{id}/restore', [CategoryController::class, 'restore']);
+
+    //DISHED
+    Route::get('/dishes', [DishController::class, 'index']);
+    Route::post('/dishes', [DishController::class, 'store']);
+    Route::get('/dishes/{id}', [DishController::class, 'show']);
+    Route::get('/dishes/{id}/edit', [DishController::class, 'edit']);
+    Route::put('/dishes/{id}/update', [DishController::class, 'update']);
+    Route::delete('/dishes/{id}/delete', [DishController::class, 'destroy']);
+    Route::post('/dishes/{id}/restore', [DishController::class, 'restore']);
 });
 
 

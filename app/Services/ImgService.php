@@ -9,21 +9,13 @@ use Illuminate\Support\Facades\Storage;
 
 class ImgService
 {
-    public function storeImage($request)
+    public function storeImage($data, $type)
     {
-        $data = $request->validated();
-        if($request->hasFile('img'))
+        if($data->hasFile('img'))
         {
-            $image = $request->file('img');
-            $path = Storage::putFile('img', new File($image));
-        }
-        $data['img'] = $path;
-        $category = Category::create($data);
-        if ($category)
-        {
-            return response()->json([
-                'message' => 'Категория меню успешно добавлена'
-            ], 200);
+            $image = $data->file('img');
+            $path = Storage::putFile('img/'.$type, new File($image));
+            return $path;
         }
         else
         {
@@ -31,5 +23,23 @@ class ImgService
                 'message' => 'Ошибка, что-то пошло не так'
             ], 500);
         }
+    }
+    public function updateImage($newData, $oldData, $type)
+    {
+        if($newData->hasFile('img'))
+        {
+            $this->deleteImage($oldData);
+            return $this->storeImage($newData, $type);
+        }
+        else
+        {
+            return response()->json([
+                'message' => 'Ошибка, что-то пошло не так'
+            ], 500);
+        }
+    }
+    public function deleteImage($oldData)
+    {
+        Storage::delete($oldData);
     }
 }

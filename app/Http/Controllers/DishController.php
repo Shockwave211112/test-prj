@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Filters\CategoryFilter;
-use App\Http\Requests\Category\FilterRequest;
-use App\Http\Requests\Category\StoreRequest;
-use App\Http\Requests\Category\UpdateRequest;
-use App\Models\Category;
+use App\Http\Filters\DishFilter;
+use App\Http\Requests\Dish\FilterRequest;
+use App\Http\Requests\Dish\StoreRequest;
+use App\Http\Requests\Dish\UpdateRequest;
+use App\Models\Dish;
 use App\Services\ImgService;
 
-class CategoryController extends Controller
+class DishController extends Controller
 {
     public $service;
     public function __construct(ImgService $service)
@@ -20,8 +20,8 @@ class CategoryController extends Controller
     {
         $this->authorize('view', auth()->user());
         $data = $request->validated();
-        $filter = app()->make(CategoryFilter::class, ['queryParams' => array_filter($data)]);
-        $query = Category::filter($filter);
+        $filter = app()->make(DishFilter::class, ['queryParams' => array_filter($data)]);
+        $query = Dish::filter($filter);
         if ($request->sort == null) {
             $sort = 'asc';
         } else {
@@ -31,21 +31,20 @@ class CategoryController extends Controller
         {
             $query->orderBy('name', $sort)->paginate(5);
         }
-        $categories = $query->paginate(10);
-        return $categories;
+        return $query->paginate(10);
     }
 
     public function store(StoreRequest $request)
     {
         $this->authorize('view', auth()->user());
         $data = $request->validated();
-        $type = "category";
+        $type = "dish";
         $data['img'] = $this->service->storeImage($request, $type);
-        $category = Category::create($data);
-        if ($category)
+        $dish = Dish::create($data);
+        if ($dish)
         {
             return response()->json([
-                'message' => 'Категория меню успешно добавлена'
+                'message' => 'Блюдо успешно добавлено'
             ], 200);
         }
         else
@@ -58,30 +57,31 @@ class CategoryController extends Controller
     public function show($id)
     {
         $this->authorize('view', auth()->user());
-        $category = Category::find($id);
-        if($category)
+        $dish = Dish::find($id);
+        dd($dish->categories());
+        if($dish)
         {
-            return response()->json($category, 200);
+            return response()->json($dish, 200);
         }
         else
         {
             return response()->json([
-                'message' => 'Категория меню не найдена'
+                'message' => 'Блюдо не найдено'
             ], 404);
         }
     }
     public function edit($id)
     {
         $this->authorize('view', auth()->user());
-        $category = Category::find($id);
-        if($category)
+        $dish = Dish::find($id);
+        if($dish)
         {
-            return response()->json($category,200);
+            return response()->json($dish,200);
         }
         else
         {
             return response()->json([
-                'message' => 'Категория меню не найдена'
+                'message' => 'Блюдо не найдено'
             ], 404);
         }
     }
@@ -89,14 +89,15 @@ class CategoryController extends Controller
     {
         $this->authorize('update', auth()->user());
         $data = $request->validated();
-        $category = Category::find($id);
-        if($category)
+        $dish = Dish::find($id);
+        if ($dish)
         {
-            if($request->hasFile('img')) {
-                $type = "category";
-                $data['img'] = $this->service->updateImage($request, $category['img'], $type);
+            if ($request->hasFile('img'))
+            {
+                $type = "dish";
+                $data['img'] = $this->service->updateImage($request, $dish['img'], $type);
             }
-            $category->update($data);
+            $dish->update($data);
             return response()->json([
                 'message' => 'Категория меню успешно обновлена'
             ], 200);
@@ -104,26 +105,26 @@ class CategoryController extends Controller
         else
         {
             return response()->json([
-                'message' => 'Категория меню не найдена'
+                'message' => 'Блюдо не найдено'
             ], 404);
         }
     }
     public function destroy($id)
     {
         $this->authorize('delete', auth()->user());
-        $category = Category::find($id);
-        if($category)
+        $dish = Dish::find($id);
+        if($dish)
         {
-            $this->service->deleteImage($category['img']);
-            $category->delete();
+            $this->service->deleteImage($dish['img']);
+            $dish->delete();
             return response()->json([
-                'message' => 'Категория меню успешно удалена'
+                'message' => 'Блюдо успешно удалено'
             ], 200);
         }
         else
         {
             return response()->json([
-                'message' => 'Категория меню не найдена'
+                'message' => 'Блюдо не найдено'
             ], 404);
         }
     }
