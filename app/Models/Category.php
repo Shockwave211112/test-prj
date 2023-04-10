@@ -14,4 +14,9 @@ class Category extends Model
     use Filterable;
     protected $table = 'categories';
     protected $guarded = false;
+
+    public function dishes()
+    {
+        return $this->hasMany(Dish::class, 'category_id', 'id');
+    }
 }

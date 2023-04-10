@@ -16,7 +16,6 @@ class UserController extends Controller
         $data = $request->validated();
         $filter = app()->make(UserFilter::class, ['queryParams' => array_filter($data)]);
         $query = User::filter($filter);
-
         if ($request->sort == null) {
             $sort = 'asc';
         } else {

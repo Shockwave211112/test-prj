@@ -27,6 +27,7 @@ class UpdateRequest extends FormRequest
             'name'  => ['string', 'max:254'],
             'email' => ['email', 'max:254', 'unique:users'],
             'role_id'  => ['digits_between:1,3'],
+            'pin_code' => ['unique:users', 'digits:4']
         ];
     }
 }

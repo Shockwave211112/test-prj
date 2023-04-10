@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('calories');
             $table->unsignedBigInteger('price')->default(0);
 
-            $table->unsignedBigInteger('category_id')->nullable();
+            $table->unsignedBigInteger('category_id');
             $table->index('category_id', 'dish_category_idx');
             $table->foreign('category_id', 'dish_category_fk')->on('categories')->references('id')->onDelete('cascade');
 

@@ -11,4 +11,5 @@ class Dish extends Model
     use HasFactory;
     use SoftDeletes;
     protected $table = 'dishes';
+    protected $guarded = false;
 }
