@@ -14,11 +14,10 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('number')->unique();
-            $table->unsignedBigInteger('count')->default(1);
+            $table->unsignedBigInteger('count')->default(0);
             $table->unsignedBigInteger('total_cost')->default(0);
-            $table->dateTime('closing_date')->nullable();
-
-
+            $table->boolean('is_closed')->default("false");
+            $table->dateTime('closed_at')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->index('user_id', 'order_user_idx');
             $table->foreign('user_id', 'order_user_fk')->on('users')->references('id')->onDelete('cascade');

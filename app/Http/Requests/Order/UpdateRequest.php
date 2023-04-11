@@ -24,11 +24,8 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'number' => ['unique:orders', 'string'],
-            'count'  => ['digits_between:1,3'],
-            'total_cost' => ['digits_between:1,7'],
-            'user_id' => ['exists:users,id'],
-            'closing_date' => ['date']
+            'number' => ['required', 'string'],
+            'is_closed' => ['required', 'boolean']
         ];
     }
 }

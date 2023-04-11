@@ -6,8 +6,10 @@ use App\Http\Filters\DishFilter;
 use App\Http\Requests\Dish\FilterRequest;
 use App\Http\Requests\Dish\StoreRequest;
 use App\Http\Requests\Dish\UpdateRequest;
+use App\Models\Category;
 use App\Models\Dish;
 use App\Services\ImgService;
+use Illuminate\Http\Request;
 
 class DishController extends Controller
 {
@@ -126,5 +128,12 @@ class DishController extends Controller
                 'message' => 'Блюдо не найдено'
             ], 404);
         }
+    }
+    public function menu(Request $request)
+    {
+        $menu = Category::all()->each->dishes;
+        return response()->json([
+            'categories_dishes' => $menu
+        ], 200);
     }
 }

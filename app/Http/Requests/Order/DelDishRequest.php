@@ -3,8 +3,9 @@
 namespace App\Http\Requests\Order;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class FilterRequest extends FormRequest
+class DelDishRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,9 +23,8 @@ class FilterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'number' => ['unique:orders', 'string'],
-            'total_cost' => ['digits_between:1,7'],
-            'user_id' => ['exists:users,id']
+            'number' => ['string'],
+            'dish_id' => ['digits_between:1,3']
         ];
     }
 }

@@ -25,6 +25,9 @@ Route::post('/password/forgot', [NewPasswordController::class, 'forgot'])->middl
 Route::post('/password/reset', [NewPasswordController::class, 'reset'])->middleware('guest')->name('password.reset');
 Route::post('/login', [AuthController::class, 'login'])->middleware('guest');
 
+//DISHES
+Route::get('/dishes/menu', [DishController::class, 'menu']);
+
 Route::group(['middleware' => ['auth:sanctum']], function()
 {
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -59,10 +62,12 @@ Route::group(['middleware' => ['auth:sanctum']], function()
     Route::get('/orders', [OrderController::class, 'index']);
     Route::post('/orders', [OrderController::class, 'store']);
     Route::get('/orders/{id}', [OrderController::class, 'show']);
+
     Route::get('/orders/{id}/edit', [OrderController::class, 'edit']);
+    Route::put('/orders/{id}/edit/add', [OrderController::class, 'addDish']);
+    Route::put('/orders/{id}/edit/{dish_id}/del', [OrderController::class, 'delDish']);
     Route::put('/orders/{id}/update', [OrderController::class, 'update']);
+
     Route::delete('/orders/{id}/delete', [OrderController::class, 'destroy']);
     Route::post('/orders/{id}/restore', [OrderController::class, 'restore']);
 });
-
-

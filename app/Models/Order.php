@@ -13,9 +13,11 @@ class Order extends Model
     use HasFactory;
     use Filterable;
     protected $table = 'orders';
+    protected $guarded = false;
     public function dishes(): BelongsToMany
     {
-        return $this->belongsToMany(Dish::class, 'dish_orders', 'order_id', 'dish_id');
+        return $this->belongsToMany(Dish::class, 'dish_orders', 'order_id', 'dish_id')
+            ->withPivot('count');
     }
     public function user(): HasOne
     {

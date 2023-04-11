@@ -24,10 +24,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'number' => ['required', 'unique:orders', 'string'],
-            'count'  => ['digits_between:1,3'],
-            'total_cost' => ['digits_between:1,7'],
             'user_id' => ['required', 'exists:users,id'],
-            'closing_date' => ['date']
         ];
     }
 }

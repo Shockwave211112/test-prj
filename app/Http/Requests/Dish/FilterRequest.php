@@ -23,7 +23,11 @@ class FilterRequest extends FormRequest
     {
         return [
             'name'  => ['string'],
-            'img' => ['image:jpg,jpeg,png']
+            'img' => ['image:jpg,jpeg,png'],
+            'category_id' => ['digits_between:1,3', 'exists:categories,id'],
+            'calories' => ['digits_between:1,5'],
+            'price' => ['digits_between:1,5'],
+            'composition' => ['string']
         ];
     }
 }

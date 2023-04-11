@@ -16,6 +16,7 @@ return new class extends Migration
 
             $table->unsignedBigInteger('dish_id');
             $table->unsignedBigInteger('order_id');
+            $table->unsignedBigInteger('count');
 
             $table->index('dish_id', 'dish_order_dish_idx');
             $table->index('order_id', 'dish_order_order_idx');
