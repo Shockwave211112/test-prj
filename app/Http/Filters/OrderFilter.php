@@ -8,14 +8,14 @@ class OrderFilter extends AbstractFilter
 {
     public const NUMBER = 'number';
     public const TOTAL_COST = 'total_cost';
-    public const CLOSING_DATE = 'closing_date';
+    public const CLOSED_AT = 'closed_at';
 
     protected function getCallbacks(): array
     {
         return [
             self::NUMBER => [$this, 'number'],
             self::TOTAL_COST => [$this, 'total_cost'],
-            self::CLOSING_DATE => [$this, 'closing_date']
+            self::CLOSED_AT => [$this, 'closed_at']
         ];
     }
     public function number(Builder $builder, $value)
@@ -26,8 +26,8 @@ class OrderFilter extends AbstractFilter
     {
         $builder->where('total_cost', 'like', $value);
     }
-    public function closing_date(Builder $builder, $value)
+    public function closed_at(Builder $builder, $value)
     {
-        $builder->where('closing_date', 'like', "%{$value}%");
+        $builder->where('closed_at', 'like', "%{$value}%");
     }
 }

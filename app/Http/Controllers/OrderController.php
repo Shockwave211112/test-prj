@@ -4,24 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Http\Filters\OrderFilter;
 use App\Http\Requests\Order\AddDishRequest;
-use App\Http\Requests\Order\DelDishRequest;
 use App\Http\Requests\Order\FilterRequest;
 use App\Http\Requests\Order\StoreRequest;
 use App\Http\Requests\Order\UpdateRequest;
 use App\Models\Dish;
 use App\Models\DishOrder;
 use App\Models\Order;
+use App\Models\User;
 use App\Services\ImgService;
-use Illuminate\Database\Eloquent\Collection;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
-    public $service;
-    public function __construct(ImgService $service)
-    {
-        $this->service = $service;
-    }
     public function index(FilterRequest $request)
     {
         $this->authorize('view', auth()->user());
@@ -31,25 +26,33 @@ class OrderController extends Controller
 
         if ($request->sort == null) {
             $sort = 'asc';
-        } else {
+        }
+        else
+        {
             $sort = $request->sort;
         }
-        if(str_contains($request->getQueryString(), "orderBy=number"))
+        switch($request->orderBy)
         {
-            $query->orderBy('number', $sort);
+            case 'number':
+                $query->orderBy('number', $sort);
+                break;
+            case 'total_cost':
+                $query->orderBy('total_cost', $sort);
+                break;
+            case 'closed_at':
+                $query->orderBy('closed_at', $sort);
+                break;
+            case 'waiter':
+                $query->orderBy('user_id', $sort);
+                break;
         }
-        elseif(str_contains($request->getQueryString(), "orderBy=total_cost"))
+        if($request->waiter)
         {
-            $query->orderBy('total_cost', $sort);
+            $query->where('user_id', '=',
+                User::where('name',
+                    'like',
+                    "%{$request->waiter}%")->first()->id);
         }
-        elseif(str_contains($request->getQueryString(), "orderBy=closing_date"))
-        {
-            $query->orderBy('closing_date', $sort);
-        }
-//        elseif(str_contains($request->getQueryString(), "orderBy=waiter"))
-//        {
-//           $query->orderBy($query->user->name, $sort);
-//        }
         return $query->paginate(10);
     }
 
@@ -180,6 +183,10 @@ class OrderController extends Controller
         $order = Order::firstWhere('number', $data['number']);
         if ($order)
         {
+            if($data['is_closed'])
+            {
+                $data['closed_at'] = Carbon::now();
+            }
             $order->update($data);
             return response()->json([
                 'message' => 'Состояние заказа успешно обновлено'

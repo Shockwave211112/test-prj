@@ -27,6 +27,8 @@ Route::post('/login', [AuthController::class, 'login'])->middleware('guest');
 
 //DISHES
 Route::get('/dishes/menu', [DishController::class, 'menu']);
+Route::get('/dishes', [DishController::class, 'index']);
+Route::get('/dishes/{id}', [DishController::class, 'show']);
 
 Route::group(['middleware' => ['auth:sanctum']], function()
 {
@@ -50,9 +52,7 @@ Route::group(['middleware' => ['auth:sanctum']], function()
     Route::post('/categories/{id}/restore', [CategoryController::class, 'restore']);
 
     //DISHES
-    Route::get('/dishes', [DishController::class, 'index']);
     Route::post('/dishes', [DishController::class, 'store']);
-    Route::get('/dishes/{id}', [DishController::class, 'show']);
     Route::get('/dishes/{id}/edit', [DishController::class, 'edit']);
     Route::put('/dishes/{id}/update', [DishController::class, 'update']);
     Route::delete('/dishes/{id}/delete', [DishController::class, 'destroy']);

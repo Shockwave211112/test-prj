@@ -20,7 +20,6 @@ class DishController extends Controller
     }
     public function index(FilterRequest $request)
     {
-        $this->authorize('view', auth()->user());
         $data = $request->validated();
         $filter = app()->make(DishFilter::class, ['queryParams' => array_filter($data)]);
         $query = Dish::filter($filter);
@@ -29,9 +28,17 @@ class DishController extends Controller
         } else {
             $sort = $request->sort;
         }
-        if(str_contains($request->getQueryString(), "orderBy=name"))
+        switch($request->orderBy)
         {
-            $query->orderBy('name', $sort);
+            case 'name':
+                $query->orderBy('name', $sort);
+                break;
+            case 'calories':
+                $query->orderBy('calories', $sort);
+                break;
+            case 'price':
+                $query->orderBy('price', $sort);
+                break;
         }
         return $query->paginate(10);
     }
@@ -58,7 +65,6 @@ class DishController extends Controller
     }
     public function show($id)
     {
-        $this->authorize('view', auth()->user());
         $dish = Dish::find($id);
         if($dish)
         {

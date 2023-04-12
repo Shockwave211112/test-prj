@@ -21,16 +21,16 @@ class UserController extends Controller
         } else {
             $sort = $request->sort;
         }
-        if(str_contains($request->getQueryString(), "orderBy=name"))
+        switch($request->orderBy)
         {
-            $query->orderBy('name', $sort);
+            case 'name':
+                $query->orderBy('name', $sort);
+                break;
+            case 'email':
+                $query->orderBy('email', $sort);
+                break;
         }
-        else if(str_contains($request->getQueryString(), "orderBy=email"))
-        {
-            $query->orderBy('email', $sort);
-        }
-        $users = $query->paginate(10);
-        return $users;
+        return $query->paginate(10);
     }
 
     public function store(StoreRequest $request)
