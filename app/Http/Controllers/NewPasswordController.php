@@ -67,7 +67,7 @@ class NewPasswordController extends Controller
         if($status != Password::PASSWORD_RESET)
         {
             return [
-                'email' => [trans($status)],
+                'status' => [trans($status)],
             ];
         }
         return [
