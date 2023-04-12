@@ -19,8 +19,7 @@ class AuthController extends Controller
         $token = $user->createToken('restToken')->plainTextToken;
 
         return response()->json([
-            'user' => $user,
-            'token' => $token,
+            'token' => $token
         ], 200);
     }
 
@@ -43,8 +42,7 @@ class AuthController extends Controller
                     {
                         $token = $user->createToken('restToken', ['*'], Carbon::now()->addDays(1))->plainTextToken;
                         return response()->json([
-                            'user' => $user,
-                            'token' => $token,
+                            'token' => $token
                         ], 200);
                     }
                 case 3:
