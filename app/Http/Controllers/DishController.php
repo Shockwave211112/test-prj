@@ -39,13 +39,16 @@ class DishController extends Controller
             case 'price':
                 $query->orderBy('price', $sort);
                 break;
+            case 'category_id':
+                $query->orderBy('category_id', $sort);
+                break;
         }
         return $query->paginate(10);
     }
 
     public function store(StoreRequest $request)
     {
-        $this->authorize('view', auth()->user());
+        $this->authorize('create', auth()->user());
         $data = $request->validated();
         $type = "dish";
         $data['img'] = $this->service->storeImage($request, $type);
@@ -79,7 +82,7 @@ class DishController extends Controller
     }
     public function edit($id)
     {
-        $this->authorize('view', auth()->user());
+        $this->authorize('update', auth()->user());
         $dish = Dish::find($id);
         if($dish)
         {

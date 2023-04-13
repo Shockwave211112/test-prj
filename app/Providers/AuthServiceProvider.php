@@ -5,6 +5,7 @@ namespace App\Providers;
 // use Illuminate\Support\Facades\Gate;
 use App\Models\Category;
 use App\Models\Dish;
+use App\Models\Order;
 use App\Models\User;
 use App\Policies\CategoryPolicy;
 use App\Policies\DishPolicy;

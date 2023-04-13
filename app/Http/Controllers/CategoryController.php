@@ -18,7 +18,6 @@ class CategoryController extends Controller
     }
     public function index(FilterRequest $request)
     {
-        $this->authorize('view', auth()->user());
         $data = $request->validated();
         $filter = app()->make(CategoryFilter::class, ['queryParams' => array_filter($data)]);
         $query = Category::filter($filter);
@@ -37,7 +36,7 @@ class CategoryController extends Controller
 
     public function store(StoreRequest $request)
     {
-        $this->authorize('view', auth()->user());
+        $this->authorize('create', auth()->user());
         $data = $request->validated();
         $type = "category";
         $data['img'] = $this->service->storeImage($request, $type);
@@ -57,7 +56,6 @@ class CategoryController extends Controller
     }
     public function show($id)
     {
-        $this->authorize('view', auth()->user());
         $category = Category::find($id);
         if($category)
         {
@@ -72,7 +70,7 @@ class CategoryController extends Controller
     }
     public function edit($id)
     {
-        $this->authorize('view', auth()->user());
+        $this->authorize('update', auth()->user());
         $category = Category::find($id);
         if($category)
         {

@@ -29,6 +29,9 @@ class UserController extends Controller
             case 'email':
                 $query->orderBy('email', $sort);
                 break;
+            case 'role_id':
+                $query->orderBy('role_id', $sort);
+                break;
         }
         return $query->paginate(10);
     }
@@ -70,7 +73,7 @@ class UserController extends Controller
     }
     public function edit($id)
     {
-        $this->authorize('view', auth()->user());
+        $this->authorize('update', auth()->user());
         $user = User::find($id);
         if($user)
         {
@@ -90,7 +93,6 @@ class UserController extends Controller
         $user = User::find($id);
         if($user)
         {
-            $data['password'] = bcrypt($data['password']);
             $user->update($data);
             return response()->json([
                 'message' => 'Пользователь успешно обновлён'

@@ -30,6 +30,10 @@ Route::get('/dishes/menu', [DishController::class, 'menu']);
 Route::get('/dishes', [DishController::class, 'index']);
 Route::get('/dishes/{id}', [DishController::class, 'show']);
 
+//CATEGORIES
+Route::get('/categories', [CategoryController::class, 'index']);
+Route::get('/categories/{id}', [CategoryController::class, 'show']);
+
 Route::group(['middleware' => ['auth:sanctum']], function()
 {
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -43,20 +47,16 @@ Route::group(['middleware' => ['auth:sanctum']], function()
     Route::post('/users/{id}/restore', [UserController::class, 'restore']);
 
     //CATEGORIES
-    Route::get('/categories', [CategoryController::class, 'index']);
     Route::post('/categories', [CategoryController::class, 'store']);
-    Route::get('/categories/{id}', [CategoryController::class, 'show']);
     Route::get('/categories/{id}/edit', [CategoryController::class, 'edit']);
     Route::put('/categories/{id}/update', [CategoryController::class, 'update']);
     Route::delete('/categories/{id}/delete', [CategoryController::class, 'destroy']);
-    Route::post('/categories/{id}/restore', [CategoryController::class, 'restore']);
 
     //DISHES
     Route::post('/dishes', [DishController::class, 'store']);
     Route::get('/dishes/{id}/edit', [DishController::class, 'edit']);
     Route::put('/dishes/{id}/update', [DishController::class, 'update']);
     Route::delete('/dishes/{id}/delete', [DishController::class, 'destroy']);
-    Route::post('/dishes/{id}/restore', [DishController::class, 'restore']);
 
     //ORDERS
     Route::get('/orders', [OrderController::class, 'index']);
@@ -69,5 +69,4 @@ Route::group(['middleware' => ['auth:sanctum']], function()
     Route::put('/orders/{id}/update', [OrderController::class, 'update']);
 
     Route::delete('/orders/{id}/delete', [OrderController::class, 'destroy']);
-    Route::post('/orders/{id}/restore', [OrderController::class, 'restore']);
 });

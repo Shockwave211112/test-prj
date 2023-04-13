@@ -9,13 +9,15 @@ class OrderFilter extends AbstractFilter
     public const NUMBER = 'number';
     public const TOTAL_COST = 'total_cost';
     public const CLOSED_AT = 'closed_at';
+    public const IS_CLOSED = 'is_closed';
 
     protected function getCallbacks(): array
     {
         return [
             self::NUMBER => [$this, 'number'],
             self::TOTAL_COST => [$this, 'total_cost'],
-            self::CLOSED_AT => [$this, 'closed_at']
+            self::CLOSED_AT => [$this, 'closed_at'],
+            self::IS_CLOSED => [$this, 'is_closed']
         ];
     }
     public function number(Builder $builder, $value)
@@ -29,5 +31,9 @@ class OrderFilter extends AbstractFilter
     public function closed_at(Builder $builder, $value)
     {
         $builder->where('closed_at', 'like', "%{$value}%");
+    }
+    public function is_closed(Builder $builder, $value)
+    {
+        $builder->where('is_closed', 'like', "%{$value}%");
     }
 }

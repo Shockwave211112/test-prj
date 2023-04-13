@@ -34,8 +34,4 @@ class OrderPolicy
     {
         return in_array($user->role_id, [1]);
     }
-    public function forceDelete(User $user, User $model): bool
-    {
-        //
-    }
 }

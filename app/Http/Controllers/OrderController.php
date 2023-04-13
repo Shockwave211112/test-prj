@@ -58,7 +58,7 @@ class OrderController extends Controller
 
     public function store(StoreRequest $request)
     {
-        $this->authorize('view', auth()->user());
+        $this->authorize('create', auth()->user());
         $data = $request->validated();
         $order = Order::create($data);
         if ($order)
@@ -74,11 +74,11 @@ class OrderController extends Controller
             ], 500);
         }
     }
-    public function addDish(AddDishRequest $request)
+    public function addDish(AddDishRequest $request, $id)
     {
-        $this->authorize('view', auth()->user());
+        $this->authorize('update', auth()->user());
         $data = $request->validated();
-        $order = Order::firstWhere('number', $data['number']);
+        $order = Order::find($id);
         if($order)
         {
             $count = $order->count + $data['count'];    //счетчик всего заказа
@@ -111,7 +111,7 @@ class OrderController extends Controller
     }
     public function delDish(Request $request, $id, $dish_id)
     {
-        $this->authorize('view', auth()->user());
+        $this->authorize('update', auth()->user());
         $order = Order::find($id);
         if($order)
         {
@@ -153,13 +153,13 @@ class OrderController extends Controller
         else
         {
             return response()->json([
-                'message' => 'Блюдо не найдено'
+                'message' => 'Заказ не найден'
             ], 404);
         }
     }
     public function edit($id)
     {
-        $this->authorize('view', auth()->user());
+        $this->authorize('update', auth()->user());
         $order = Order::find($id);
         if($order)
         {
@@ -178,7 +178,7 @@ class OrderController extends Controller
     }
     public function update(UpdateRequest $request, int $id)
     {
-        $this->authorize('view', auth()->user());
+        $this->authorize('update', auth()->user());
         $data = $request->validated();
         $order = Order::firstWhere('number', $data['number']);
         if ($order)

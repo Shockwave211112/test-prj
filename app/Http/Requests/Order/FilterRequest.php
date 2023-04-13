@@ -25,7 +25,8 @@ class FilterRequest extends FormRequest
             'number' => ['unique:orders', 'string'],
             'total_cost' => ['digits_between:1,7'],
             'user_id' => ['exists:users,id'],
-            'closed_at' => ['date']
+            'closed_at' => ['date'],
+            'is_closed' => ['boolean']
         ];
     }
 }

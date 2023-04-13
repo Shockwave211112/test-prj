@@ -23,7 +23,6 @@ class AddDishRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'number' => ['required', 'string'],
             'dish' => ['required', 'exists:dishes,id', 'digits_between:1,3'],
             'count' => ['required', 'digits_between:1,3']
         ];
