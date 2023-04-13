@@ -1,0 +1,1806 @@
+openapi: 3.0.0
+info:
+  title: REST API для рестарана, Laravel, PHP
+  version: '0.1'
+servers:
+  - url: http://lar-test-sw.ru/api/
+    description: Dev server
+paths:
+  /register:
+    post:
+      summary: Метод для регистрации
+      tags:
+        - Auth
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '200':
+          description: Успешная регистрация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthToken'
+        default:
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorValidation'
+  /login:
+    post:
+      summary: Метод для авторизации
+      tags:
+        - Auth
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Успешный вход
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Успешный вход
+        default:
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorValidation'
+  /logout:
+    post:
+      summary: Метод для выхода из учетной записи
+      description: Доступен только авторизованным пользователям
+      tags:
+        - Auth
+      operationId: logout
+      parameters: 
+        - in: cookie
+          name: XSRF-TOKEN
+          example: 9XrN2GYZPBkrQw6TzeRqCH4BSRwnGKrgSOnqYoTE
+          required: true
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      responses:
+        '200':
+          description: Успешный выход
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Успешный выход
+        default:
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorValidation'
+  /password/forgot:
+    post:
+      summary: Метод для отправки письма для восстановления пароля
+      tags:
+        - Auth
+      operationId: forgot-password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailRequest'
+      responses:
+        '200':
+          description: Письмо отправлено
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: We have emailed your password reset link.
+        '404':
+          description: Пользователь не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Пользователь не найден
+        '422':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorValidation"   
+        default:
+          description: Ошибка
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Ошибка, что-то пошло не так
+  /password/reset:
+    post:
+      summary: После перехода по ссылке из письма
+      description: Доступен только по ссылке, одноразовый
+      tags:
+        - Auth
+      operationId: reset-password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequest'
+      responses:
+        '200':
+          description: Пароль сменён
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: Your password has been reset.
+        default:
+          description: Ошибка токена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: This password reset token is invalid.    
+#==================================USERS====================================================================#
+  /users:
+    get:
+      summary: Показ списка пользователей
+      description: Доступно только суперадминам и админам
+      tags:
+        - Users
+      operationId: index
+      parameters: 
+        - in: query
+          name: name
+          example: http://lar-test-sw.ru/api/users?name=lynn
+          description: Поиск по имени
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: email
+          example: http://lar-test-sw.ru/api/users?email=marg
+          description: Поиск по почте
+          required: false
+          schema:
+            type: string        
+        - in: query
+          name: role_id
+          example: http://lar-test-sw.ru/api/users?role_id=1
+          description: Поиск по роли
+          required: false
+          schema:
+            type: integer    
+        - in: query
+          name: orderBy
+          example: http://lar-test-sw.ru/api/users?orderBy=name
+          description: Сортировка по имени/почте/ролям
+          required: false
+          schema:
+            type: string 
+        - in: query
+          name: sort
+          example: http://lar-test-sw.ru/api/users?orderBy=name&sort=desc
+          description: Сортировка по возрастанию/убыванию. По умолчанию при "orderBy" стоит всегда значение "asc"
+          required: false
+          schema:
+            type: string 
+      responses:
+        '200':
+          description: Список пользователей
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Users"
+        default:
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorValidation"                  
+    post:
+      summary: Добавление пользователя
+      description: Доступно только суперадминам и админам
+      tags:
+        - Users
+      operationId: store
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '200':
+          description: Сообщение об успехе
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Пользователь успешно добавлен
+        '422':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorValidation"   
+        default:
+          description: Ошибка при создании
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Ошибка, что-то пошло не так
+  /users/{id}:
+    get:
+      summary: Показ данных пользователя по ID
+      description: Доступно только суперадминам и админам
+      tags:
+        - Users
+      operationId: show
+      parameters: 
+        - in: path
+          name: id
+          example: 15
+          description: ID пользователя
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Возврат информации о пользователе
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        '404':
+          description: Ошибка поиска
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error404"        
+  /users/{id}/edit:
+    get:
+      summary: Показ данных пользователя по ID
+      description: Доступно только суперадминам и админам
+      tags:
+        - Users
+      operationId: edit
+      parameters: 
+        - in: path
+          name: id
+          example: 15
+          description: ID пользователя
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Возврат информации о пользователе
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        '404':
+          description: Ошибка поиска
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error404"    
+  /users/{id}/update:
+    put:
+      summary: Обновление данных пользователя
+      description: Доступно только суперадминам и админам
+      tags:
+        - Users
+      operationId: update
+      parameters: 
+        - in: path
+          name: id
+          example: 15
+          description: ID пользователя
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Могут быть любые из предложенных полей. Если полей нет, запрос тоже пройдет успешно, ничего не  изменив
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+      responses:
+        '200':
+          description: Сообщение об успешном обновлении
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OKRequest"
+        '404':
+          description: Ошибка поиска
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error404"  
+        '422':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorValidation"  
+  /users/{id}/delete:
+    delete:
+      summary: Удаление (SoftDelete)
+      description: Доступно только суперадминам и админам
+      tags:
+        - Users
+      operationId: delete
+      parameters: 
+        - in: path
+          name: id
+          example: 15
+          description: ID пользователя
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Сообщение об успешном удалении
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OKRequest"
+        '404':
+          description: Ошибка поиска
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error404"  
+  /users/{id}/restore:
+    post:
+      summary: Восстановление удаленного пользователя
+      description: Доступно только суперадминам и админам
+      tags:
+        - Users
+      operationId: restore
+      parameters: 
+        - in: path
+          name: id
+          example: 15
+          description: ID пользователя
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Сообщение об успешном удалении
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OKRequest"
+        '404':
+          description: Ошибка поиска
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error404"  
+#=================================CATEGORIES===================================================================#
+  /categories:
+    get:
+      summary: Показ списка категорий
+      description: Доступно всем
+      tags:
+        - Categories
+      operationId: indexCategory
+      parameters: 
+        - in: query
+          name: name
+          example: http://lar-test-sw.ru/api/categories?name=burge
+          description: Поиск по названию
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: orderBy
+          example: http://lar-test-sw.ru/api/categories?orderBy=name
+          description: Сортировка по названию
+          required: false
+          schema:
+            type: string 
+        - in: query
+          name: sort
+          example: http://lar-test-sw.ru/api/categories?orderBy=name&sort=desc
+          description: Сортировка по возрастанию/убыванию. По умолчанию при "orderBy" стоит всегда значение "asc"
+          required: false
+          schema:
+            type: string 
+      responses:
+        '200':
+          description: Список пользователей
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Categories"
+        default:
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorValidation"                  
+    post:
+      summary: Добавление категории
+      description: Доступно только суперадминам и админам
+      tags:
+        - Categories
+      operationId: storeCategory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreCategoryRequest'
+      responses:
+        '200':
+          description: Сообщение об успехе
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OKRequest'
+        '422':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorValidation"   
+        default:
+          description: Ошибка при создании
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Ошибка, что-то пошло не так
+  /categories/{id}:
+    get:
+      summary: Показ данных категории по ID
+      description: Доступно всем
+      tags:
+        - Categories
+      operationId: showCategory
+      parameters: 
+        - in: path
+          name: id
+          example: 15
+          description: ID категории
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Возврат информации о категории
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        '404':
+          description: Ошибка поиска
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error404"        
+  /categories/{id}/edit:
+    get:
+      summary: Показ данных категории по ID
+      description: Доступно только суперадминам и админам
+      tags:
+        - Categories
+      operationId: editCategory
+      parameters: 
+        - in: path
+          name: id
+          example: 15
+          description: ID категории
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Возврат информации о категории
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        '404':
+          description: Ошибка поиска
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error404"    
+  /categories/{id}/update:
+    put:
+      summary: Обновление данных категории
+      description: Доступно только суперадминам и админам
+      tags:
+        - Categories
+      operationId: updateCategory
+      parameters: 
+        - in: path
+          name: id
+          example: 15
+          description: ID категории
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Могут быть любые из предложенных полей. Если полей нет, запрос тоже пройдет успешно, ничего не  изменив
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreCategoryRequest'
+      responses:
+        '200':
+          description: Сообщение об успешном обновлении
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OKRequest"
+        '404':
+          description: Ошибка поиска
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error404"  
+        '422':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorValidation"  
+  /categories/{id}/delete:
+    delete:
+      summary: Удаление
+      description: Доступно только суперадминам и админам
+      tags:
+        - Categories
+      operationId: deleteCategory
+      parameters: 
+        - in: path
+          name: id
+          example: 15
+          description: ID категории
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Сообщение об успешном удалении
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OKRequest"
+        '404':
+          description: Ошибка поиска
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error404"  
+#=================================DISHES=======================================================================#
+  /dishes:
+    get:
+      summary: Показ списка блюд
+      description: Доступно всем
+      tags:
+        - Dishes
+      operationId: indexDish
+      parameters: 
+        - in: query
+          name: name
+          example: http://lar-test-sw.ru/api/dishes?name=burge
+          description: Поиск по названию
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: composition
+          example: http://lar-test-sw.ru/api/dishes?composition=burge
+          description: Поиск по составу
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: calories
+          example: http://lar-test-sw.ru/api/dishes?calories=1
+          description: Поиск по калориям
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: price
+          example: http://lar-test-sw.ru/api/dishes?price=200
+          description: Поиск по цене
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: category_id
+          example: http://lar-test-sw.ru/api/dishes?category_id=1
+          description: Поиск по категории
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: orderBy
+          example: http://lar-test-sw.ru/api/dishes?orderBy=name
+          description: Сортировка по названию/калориям/цене/категориям
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: sort
+          example: http://lar-test-sw.ru/api/dishes?orderBy=name&sort=desc
+          description: Сортировка по возрастанию/убыванию. По умолчанию при "orderBy" стоит всегда значение "asc"
+          required: false
+          schema:
+            type: string 
+      responses:
+        '200':
+          description: Список блюд
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Dishes"
+        default:
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorValidation"                  
+    post:
+      summary: Добавление блюда
+      description: Доступно только суперадминам и админам
+      tags:
+        - Dishes
+      operationId: storeDish
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreDishRequest'
+      responses:
+        '200':
+          description: Сообщение об успехе
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OKRequest'
+        '422':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorValidation"   
+        default:
+          description: Ошибка при создании
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Ошибка, что-то пошло не так
+  /dishes/{id}:
+    get:
+      summary: Показ данных блюда по ID
+      description: Доступно всем
+      tags:
+        - Dishes
+      operationId: showDish
+      parameters: 
+        - in: path
+          name: id
+          example: 15
+          description: ID блюда
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Возврат информации о блюде
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Dish"
+        '404':
+          description: Ошибка поиска
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error404"        
+  /dishes/{id}/edit:
+    get:
+      summary: Показ данных блюда по ID
+      description: Доступно только суперадминам и админам
+      tags:
+        - Dishes
+      operationId: editDish
+      parameters: 
+        - in: path
+          name: id
+          example: 15
+          description: ID блюда
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Возврат информации о блюде
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Dish"
+        '404':
+          description: Ошибка поиска
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error404"    
+  /dishes/{id}/update:
+    put:
+      summary: Обновление данных блюда
+      description: Доступно только суперадминам и админам
+      tags:
+        - Dishes
+      operationId: updateDish
+      parameters: 
+        - in: path
+          name: id
+          example: 15
+          description: ID блюда
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Могут быть любые из предложенных полей. Если полей нет, запрос тоже пройдет успешно, ничего не  изменив
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreDishRequest'
+      responses:
+        '200':
+          description: Сообщение об успешном обновлении
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OKRequest"
+        '404':
+          description: Ошибка поиска
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error404"  
+        '422':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorValidation"  
+  /dishes/{id}/delete:
+    delete:
+      summary: Удаление
+      description: Доступно только суперадминам и админам
+      tags:
+        - Dishes
+      operationId: deleteDish
+      parameters: 
+        - in: path
+          name: id
+          example: 15
+          description: ID блюда
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Сообщение об успешном удалении
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OKRequest"
+        '404':
+          description: Ошибка поиска
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error404"                     
+  /dishes/menu:
+    get:
+      summary: Показ категорий и блюд в них по возрастанию category_id
+      description: Доступно всем
+      tags:
+        - Dishes
+      operationId: showMenu
+      responses:
+        '200':
+          description: Возврат информации о категориях и блюдах в них
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShowMenuRequest"
+        default:
+          description: Ошибка поиска
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error404"      
+  
+#=================================ORDERS=======================================================================#      
+  /orders:
+    get:
+      summary: Показ списка заказов
+      description: Доступно суперадминам и админам
+      tags:
+        - Orders
+      operationId: indexOrders
+      parameters: 
+        - in: query
+          name: number
+          example: http://lar-test-sw.ru/api/orders?number=127F
+          description: Поиск по номеру (aka имя/название)
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: total_cost
+          example: http://lar-test-sw.ru/api/orders?total_cost=122
+          description: Поиск по итоговой цене
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: closed_at
+          example: http://lar-test-sw.ru/api/orders?closed_at={date}
+          description: Поиск по дате закрытия
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: is_closed
+          example: http://lar-test-sw.ru/api/orders?is_closed=1
+          description: Поиск закрытых или открытых заказов (0/1)
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: waiter
+          example: http://lar-test-sw.ru/api/orders?waiter=Ilya
+          description: Поиск заказа по имени официанта
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: orderBy
+          example: http://lar-test-sw.ru/api/orders?orderBy=total_cost
+          description: Сортировка по номеру заказа/итоговой сумме/дате закрытия/id официанта
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: sort
+          example: http://lar-test-sw.ru/api/orders?orderBy=total_cost&sort=desc
+          description: Сортировка по возрастанию/убыванию. По умолчанию при "orderBy" стоит всегда значение "asc"
+          required: false
+          schema:
+            type: string 
+      responses:
+        '200':
+          description: Список заказов
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Orders"
+        default:
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorValidation"                  
+    post:
+      summary: Добавление заказа. Изначально создаётся пустой заказ
+      description: Доступно официантам
+      tags:
+        - Orders
+      operationId: storeOrder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreOrderRequest'
+      responses:
+        '200':
+          description: Сообщение об успехе
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OKRequest'
+        '422':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorValidation"   
+        default:
+          description: Ошибка при создании
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Ошибка, что-то пошло не так
+  /orders/{id}:
+    get:
+      summary: Показ данных заказа по ID
+      description: Доступно суперадминам и админам
+      tags:
+        - Orders
+      operationId: showOrder
+      parameters: 
+        - in: path
+          name: id
+          example: 1
+          description: ID заказа
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Возврат информации о заказе
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderDishes"
+        '404':
+          description: Ошибка поиска
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error404"        
+  /orders/{id}/edit:
+    get:
+      summary: Показ данных заказа по ID
+      description: Доступно официантам
+      tags:
+        - Orders
+      operationId: editOrder
+      parameters: 
+        - in: path
+          name: id
+          example: 1
+          description: ID заказа
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Возврат информации о заказе
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderDishes"
+        '404':
+          description: Ошибка поиска
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error404"    
+  /orders/{id}/add:
+    put:
+      summary: Добавление блюда в заказ
+      description: Доступно официантам. Если необходимо добавить количества блюда (было - 1, нужно - 2), то можно просто добавить это же блюдо в количестве 1
+      tags:
+        - Orders
+      operationId: addDishToOrder
+      parameters: 
+        - in: path
+          name: id
+          example: 1
+          description: ID заказа
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddDishToOrder'
+      responses:
+        '200':
+          description: Возврат сообщения об успехе
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OKRequest"
+        '404':
+          description: Ошибка поиска
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error404"  
+        default:
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorValidation"  
+  /orders/{id}/{dish_id}/del:
+    put:
+      summary: Удаление блюда из заказа
+      description: Доступно официантам
+      tags:
+        - Orders
+      operationId: delDishFromOrder
+      parameters: 
+        - in: path
+          name: id
+          example: 1
+          description: ID заказа
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: dish_id
+          example: 3
+          description: ID блюда
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Возврат сообщения об успехе
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OKRequest"
+        '404':
+          description: Ошибка поиска
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error404"  
+        default:
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorValidation"                    
+  /orders/{id}/update:
+    put:
+      summary: Обновление данных закза
+      description: Доступно официантам. Служит для закрытия заказа. При закрытии заказа автоматически присваивается время и дата закрытия
+      tags:
+        - Orders
+      operationId: updateOrder
+      parameters: 
+        - in: path
+          name: id
+          example: 3
+          description: ID заказа
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Могут быть любые из предложенных полей. Если полей нет, запрос тоже пройдет успешно, ничего не  изменив
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrderRequest'
+      responses:
+        '200':
+          description: Сообщение об успешном обновлении
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OKRequest"
+        '404':
+          description: Ошибка поиска
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error404"  
+        '422':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorValidation"  
+  /orders/{id}/delete:
+    delete:
+      summary: Удаление заказа
+      description: Доступно только суперадминам и админам
+      tags:
+        - Orders
+      operationId: deleteOrder
+      parameters: 
+        - in: path
+          name: id
+          example: 3
+          description: ID заказа
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Сообщение об успешном удалении
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OKRequest"
+        '404':
+          description: Ошибка поиска
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error404"                     
+                    
+                    
+components:
+  schemas:
+    RegisterRequest:
+      type: object
+      required:
+        - name
+        - email
+        - password
+        - password_confirmation
+        - pin_code
+        - role_id
+      properties:
+        name:
+          type: string
+          example: Иванов Иван Иванович
+        email:
+          type: string
+          example: ivanov@gmail.com
+          format: email
+          description: Уникальное
+        password:
+          type: string
+          example: qwerty12345
+        password_confirmation:
+          type: string
+          example: qwerty12345
+          description: Повторение пароля
+        pin_code:
+          type: integer
+          example: 6789
+          description: 4 цифры, уникальное
+        role_id:
+          type: integer
+          enum:
+            - 1
+            - 2
+            - 3
+          description: Роль и права. 1 - Супер админ, 2 - админ, 3 - официант
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - pin_code
+      properties:
+        email:
+          type: string
+          example: ivanov@gmail.com | ЕСЛИ НЕТ PIN
+          format: email
+          description: Обязательное, если нет ПИН-кода
+        password:
+          type: string
+          example: qwerty12345 | ЕСЛИ НЕТ PIN
+          description: Обязательное, если есть почта
+        pin_code:
+          type: integer
+          example: 6789
+          description: Обязательное, если нет почты, 4 цифры
+    ErrorValidation:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Описание ошибки
+        errors:
+          type: object
+          example:
+            field1:
+              - Необходимо поле названия.
+            field2:
+              - Айди не существует.
+            field_N:
+              - Необходимо ввести пароль ещё раз.
+          description: Список ошибок и список полей, в которых они есть
+    PasswordResetRequest:
+      type: object
+      required:
+        - token
+        - email
+        - password
+        - password_confirmation
+      properties:
+        token:
+          type: string
+          example: jubRK7xOEha15yEFB0hMXu0JXeh6of7u1JlSFSSf
+          description: Обязательное, вставляется само после перехода по ссылке
+        email:
+          type: string
+          format: email
+          example: ivanov@gmail.com
+          description: Обязательное, вставляется само после перехода по ссылке
+        password:
+          type: string
+          example: qwerty12345
+          description: Обязательное
+        password_confirmation:
+          type: string
+          example: qwerty12345
+          description: Обязательное, повторение
+    UserUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Иванов Иван Иванович
+        email:
+          type: string
+          example: ivanov@gmail.com
+          format: email
+          description: Уникальное
+        pin_code:
+          type: integer
+          example: 6789
+          description: 4 цифры, уникальное
+        role_id:
+          type: integer
+          enum:
+            - 1
+            - 2
+            - 3
+          description: Роль и права. 1 - Супер админ, 2 - админ, 3 - официант
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Иванов Иван Иванович
+        email:
+          type: string
+          example: ivanov@gmail.com
+          description: Уникальное
+        role_id:
+          type: integer
+          enum:
+            - 1
+            - 2
+            - 3
+          description: Роль и права. 1 - Супер админ, 2 - админ, 3 - официант
+        email_verified_at:
+          type: string
+          example: 2023-04-11T12:12:48.000000Z
+        created_at:
+          type: string
+          example: 2023-04-11T12:12:48.000000Z
+        updated_at:
+          type: string
+          example: 2023-04-11T12:12:48.000000Z
+        deleted_at:
+          type: string
+          example: none/{date}
+    Users:
+      type: array
+      items:
+        properties:
+          current_page:
+            type: integer
+            example: 1
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/User'  
+          first_page_url:
+            type: string
+            example: http://lar-test-sw.ru/api/users?page=1
+          from:
+            type: integer
+            example: 1
+          last_page:
+            type: integer
+            example: 2
+          last_page_url:
+            type: string
+            example: http://lar-test-sw.ru/api/users?page=2
+          links:
+            type: array
+            items:
+              type: object
+              description: Ссылки на страницы - следующая, предыдущая, 1-2-3-4-5 и т.д..
+              properties:
+                url:
+                  type: string
+                  example: http://lar-test-sw.ru/api/users?page=1
+                label:
+                  type: string
+                  example: "1"
+                active:
+                  type: boolean
+                  example: true
+          next_page_url:
+            type: string
+            example: http://lar-test-sw.ru/api/users?page=2
+          path:
+            type: string
+            example: http://lar-test-sw.ru/api/users
+          per_page:
+            type: integer
+            example: 10
+          prev_page_url:
+            type: string
+            example: null
+          to:
+            type: integer
+            example: 10
+          total:
+            type: integer
+            example: 15
+    AuthToken:
+      type: object
+      properties:
+        token:
+          type: string
+          example: jubRK7xOEha15yEFB0hMXu0JXeh6of7u1JlSFSSf
+    EmailRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          example: ivanov@gmail.com
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Напитки
+        img:
+          type: string
+          example: img/category/78WHkaVeB8vc3Yld6q9LJrXcmbv3pX9Cyd1TWyrz.jpg
+          description: Картинка категории
+        created_at:
+          type: string
+          example: 2023-04-11T12:12:48.000000Z
+        updated_at:
+          type: string
+          example: 2023-04-11T12:12:48.000000Z
+    Categories:
+      type: array
+      items:
+        properties:
+          current_page:
+            type: integer
+            example: 1
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Category'  
+          first_page_url:
+            type: string
+            example: http://lar-test-sw.ru/api/categories?page=1
+          from:
+            type: integer
+            example: 1
+          last_page:
+            type: integer
+            example: 2
+          last_page_url:
+            type: string
+            example: http://lar-test-sw.ru/api/categories?page=2
+          links:
+            type: array
+            items:
+              type: object
+              description: Ссылки на страницы - следующая, предыдущая, 1-2-3-4-5 и т.д..
+              properties:
+                url:
+                  type: string
+                  example: http://lar-test-sw.ru/api/categories?page=1
+                label:
+                  type: string
+                  example: "1"
+                active:
+                  type: boolean
+                  example: true
+          next_page_url:
+            type: string
+            example: http://lar-test-sw.ru/api/categories?page=2
+          path:
+            type: string
+            example: http://lar-test-sw.ru/api/categories
+          per_page:
+            type: integer
+            example: 10
+          prev_page_url:
+            type: string
+            example: null
+          to:
+            type: integer
+            example: 10
+          total:
+            type: integer
+            example: 15
+    CategoryDishes:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Напитки
+        img:
+          type: string
+          example: img/category/78WHkaVeB8vc3Yld6q9LJrXcmbv3pX9Cyd1TWyrz.jpg
+          description: Картинка категории
+        created_at:
+          type: string
+          example: 2023-04-11T12:12:48.000000Z
+        updated_at:
+          type: string
+          example: 2023-04-11T12:12:48.000000Z
+        dishes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Dish' 
+    StoreCategoryRequest:
+      type: object
+      required:
+        - name
+        - img
+      properties:
+        name:
+          type: string
+          example: Напитки
+        img:
+          type: string
+          example: Image File
+    Dish:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Биг-мак
+        img:
+          type: string
+          example: img/dish/7523faoisfoSFbcA123gsd31TWyrz.jpg
+          description: Картинка блюда
+        composition:
+          type: string
+          example: Две мясные котлеты гриль, специальный соус, сыр, огурцы, салат и лук, всё на булочке с кунжутом
+          description: Картинка категории
+        calories:
+          type: integer
+          example: 500
+        price:
+          type: integer
+          example: 200
+        category_id:
+          type: integer
+          example: 3
+        created_at:
+          type: string
+          example: 2023-04-11T12:12:48.000000Z
+        updated_at:
+          type: string
+          example: 2023-04-11T12:12:48.000000Z
+    Dishes:
+      type: array
+      items:
+        properties:
+          current_page:
+            type: integer
+            example: 1
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Dish'  
+          first_page_url:
+            type: string
+            example: http://lar-test-sw.ru/api/dishes?page=1
+          from:
+            type: integer
+            example: 1
+          last_page:
+            type: integer
+            example: 2
+          last_page_url:
+            type: string
+            example: http://lar-test-sw.ru/api/dishes?page=2
+          links:
+            type: array
+            items:
+              type: object
+              description: Ссылки на страницы - следующая, предыдущая, 1-2-3-4-5 и т.д..
+              properties:
+                url:
+                  type: string
+                  example: http://lar-test-sw.ru/api/dishes?page=1
+                label:
+                  type: string
+                  example: "1"
+                active:
+                  type: boolean
+                  example: true
+          next_page_url:
+            type: string
+            example: http://lar-test-sw.ru/api/dishes?page=2
+          path:
+            type: string
+            example: http://lar-test-sw.ru/api/dishes
+          per_page:
+            type: integer
+            example: 10
+          prev_page_url:
+            type: string
+            example: null
+          to:
+            type: integer
+            example: 10
+          total:
+            type: integer
+            example: 15
+    StoreDishRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Биг-мак
+        img:
+          type: string
+          example: Image File
+          description: Картинка блюда
+        composition:
+          type: string
+          example: Две мясные котлеты гриль, специальный соус, сыр, огурцы, салат и лук, всё на булочке с кунжутом
+          description: Картинка категории
+        calories:
+          type: integer
+          example: 500
+        price:
+          type: integer
+          example: 200
+        category_id:
+          type: integer
+          example: 3
+    ShowMenuRequest:
+      type: object
+      properties:
+        categories_dishes:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryDishes' 
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        number:
+          type: string
+          example: 127F
+        count:
+          type: integer
+          example: 5
+          description: Общее количество блюд в заказе
+        total_cost:
+          type: integer
+          example: 5
+          description: Общая сумма заказа
+        is_closed:
+          type: boolean
+          example: true
+        closed_at:
+          type: string
+          example: 2023-04-11T12:13:48.000000Z
+        user_id:
+          type: integer
+          example: 3
+          description: ID официанта
+        created_at:
+          type: string
+          example: 2023-04-11T12:12:48.000000Z
+        updated_at:
+          type: string
+          example: 2023-04-11T12:12:48.000000Z
+    Orders:
+      type: array
+      items:
+        properties:
+          current_page:
+            type: integer
+            example: 1
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/Order'  
+          first_page_url:
+            type: string
+            example: http://lar-test-sw.ru/api/orders?page=1
+          from:
+            type: integer
+            example: 1
+          last_page:
+            type: integer
+            example: 2
+          last_page_url:
+            type: string
+            example: http://lar-test-sw.ru/api/orders?page=2
+          links:
+            type: array
+            items:
+              type: object
+              description: Ссылки на страницы - следующая, предыдущая, 1-2-3-4-5 и т.д..
+              properties:
+                url:
+                  type: string
+                  example: http://lar-test-sw.ru/api/orders?page=1
+                label:
+                  type: string
+                  example: "1"
+                active:
+                  type: boolean
+                  example: true
+          next_page_url:
+            type: string
+            example: http://lar-test-sw.ru/api/orders?page=2
+          path:
+            type: string
+            example: http://lar-test-sw.ru/api/orders
+          per_page:
+            type: integer
+            example: 10
+          prev_page_url:
+            type: string
+            example: null
+          to:
+            type: integer
+            example: 10
+          total:
+            type: integer
+            example: 15
+    OrderDishes:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        number:
+          type: string
+          example: 127F
+        count:
+          type: integer
+          example: 5
+          description: Общее количество блюд в заказе
+        total_cost:
+          type: integer
+          example: 5
+          description: Общая сумма заказа
+        is_closed:
+          type: boolean
+          example: true
+        closed_at:
+          type: string
+          example: 2023-04-11T12:13:48.000000Z
+        user_id:
+          type: integer
+          example: 3
+          description: ID официанта
+        created_at:
+          type: string
+          example: 2023-04-11T12:12:48.000000Z
+        updated_at:
+          type: string
+          example: 2023-04-11T12:12:48.000000Z
+        dishes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Dish' 
+        waiter:
+          type: string
+          example: Constantin Buckridge
+    StoreOrderRequest:
+      type: object
+      properties:
+        number:
+          type: string
+          example: 652A
+        user_id:
+          type: integer
+          example: 3
+          description: ID официанта
+    AddDishToOrder:
+      type: object
+      properties:
+        dish:
+          type: integer
+          example: 3
+        count:
+          type: integer
+          example: 1
+          description: Количество данного блюда   
+    UpdateOrderRequest:
+      type: object
+      properties:
+        is_closed:
+          type: boolean
+          example: 1
+
+    Error404:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "[Объект] не найден(o/a)"
+    OKRequest:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Успешно"
+        
+    
