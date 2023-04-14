@@ -1036,17 +1036,17 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error404"
-  /orders/{id}/add:
+  /orders/{id}/updateDish:
     put:
       summary: Добавление блюда в заказ
-      description: Доступно официантам. Если необходимо добавить количества блюда (было - 1, нужно - 2), то можно просто добавить это же блюдо в количестве 1
+      description: Доступно официантам. Если необходимо добавить количества блюда (было - 1, нужно - 2), то можно просто добавить это же блюдо в количестве 1. Если надо уменьшить количество, то передавай отрицательный count
       tags:
         - Orders
       operationId: addDishToOrder
       parameters:
         - in: path
           name: id
-          example: 1
+          example: 1 / -2
           description: ID заказа
           required: true
           schema:
@@ -1055,7 +1055,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AddDishToOrder'
+              $ref: '#/components/schemas/UpdateDishInOrderRequest'
       responses:
         '200':
           description: Возврат сообщения об успехе
@@ -1773,7 +1773,7 @@ components:
           type: integer
           example: 3
           description: ID официанта
-    AddDishToOrder:
+    UpdateDishInOrderRequest:
       type: object
       properties:
         dish:
@@ -1781,7 +1781,7 @@ components:
           example: 3
         count:
           type: integer
-          example: 1
+          example: 1 | -2
           description: Количество данного блюда
     UpdateOrderRequest:
       type: object
