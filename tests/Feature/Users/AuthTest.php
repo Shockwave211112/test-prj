@@ -25,10 +25,15 @@ class AuthTest extends TestCase
                 'role_id' => $user->getAttributes()['role_id']
             ]
         );
+        $this->assertDatabaseHas('users', [
+            'name' => $user->name,
+            'email' => $user->email,
+        ]);
         $response->assertStatus(200);
+        $response->assertJsonPath('data.token', csrf_token());
     }
 
-    public function testLoginPasswordAdmin(): void
+    public function testAdminAuth(): void
     {
         $user = User::factory()->create(['password' => bcrypt($password = 'abobus1234'), 'role_id' => 1]);
         $response = $this->post('/api/login',
@@ -38,35 +43,34 @@ class AuthTest extends TestCase
             ]
         );
         $response->assertStatus(200);
+        $response->assertJsonPath('data.token', csrf_token());
     }
 
-    public function testLoginPasswordWaiter(): void
+    public function testWaiterAuth(): void
     {
-        $user = User::factory()->create(['password' => bcrypt($password = 'abobus1234'), 'role_id' => 3]);
+        $user = User::factory()->create(['role_id' => 3]);
         $response = $this->post('/api/login',
             [
                 'email' => $user->email,
-                'password' => $password,
+                'password' => $user->password,
             ]
         );
         $response->assertStatus(401);
-    }
 
-    public function testLoginPIN(): void
-    {
-        $user = User::factory()->create(['role_id' => 3]);
         $response = $this->post('/api/login',
             [
                 'pin_code' => $user->pin_code
             ]
         );
         $response->assertStatus(200);
-    }
+        $response->assertJsonPath('data.token', csrf_token());
 
+        $response = $this->actingAs($user)->post('/api/logout');
+        $response->assertStatus(200);
+    }
     public function testLogout(): void
     {
-        $user = User::factory()->create(['role_id' => 1]);
-        $response = $this->actingAs($user)->post('/api/logout');
+        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->delete("/api/logout");
         $response->assertStatus(200);
     }
 }

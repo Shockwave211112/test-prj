@@ -26,7 +26,7 @@ class OrderFilter extends AbstractFilter
     }
     public function total_cost(Builder $builder, $value)
     {
-        $builder->where('total_cost', 'like', $value);
+        $builder->where('total_cost', '=', $value);
     }
     public function closed_at(Builder $builder, $value)
     {

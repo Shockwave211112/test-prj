@@ -28,27 +28,34 @@ class AuthController extends Controller
         $data = $request->validated();
         if(array_key_exists('email', $data))
         {
-            $user = User::where('email', $data['email'])->firstOrFail();
-            switch($user->role_id) {
-                case 1:
-                case 2:
-                    if(!$user || !Hash::check($data['password'], $user->password))
-                    {
+            $user = User::where('email', $data['email'])->first();
+            if(!$user)
+            {
+                return response()->json([
+                    'message' => 'Пользователь не найден'
+                ], 404);
+            }
+            else
+            {
+                switch ($user->role_id) {
+                    case 1:
+                    case 2:
+                        if (!$user || !Hash::check($data['password'], $user->password)) {
+                            return response()->json([
+                                'message' => 'Почта и пароль не совпадают'
+                            ], 401);
+                        } else {
+                            $token = $user->createToken('restToken', ['*'], Carbon::now()->addDays(1))->plainTextToken;
+//                            $token = $user->createToken('restToken')->plainTextToken;
+                            return response()->json([
+                                'token' => $token
+                            ], 200);
+                        }
+                    case 3:
                         return response()->json([
-                            'message' => 'Почта и пароль не совпадают'
+                            'message' => 'Доступен вход только по PIN'
                         ], 401);
-                    }
-                    else
-                    {
-                        $token = $user->createToken('restToken', ['*'], Carbon::now()->addDays(1))->plainTextToken;
-                        return response()->json([
-                            'token' => $token
-                        ], 200);
-                    }
-                case 3:
-                    return response()->json([
-                        'message' => 'Доступен вход только по PIN'
-                    ], 401);
+                }
             }
             return response()->json([
                 'message' => 'Почта и пароль не совпадают'
@@ -57,7 +64,7 @@ class AuthController extends Controller
 
         if(array_key_exists('pin_code', $data))
         {
-            $user = User::where('pin_code', $data['pin_code'])->firstOrFail();
+            $user = User::where('pin_code', $data['pin_code'])->first();
             if(!$user)
             {
                 return response()->json([
@@ -69,8 +76,7 @@ class AuthController extends Controller
                 $token = $user->createToken('restToken', ['*'], Carbon::now()->addDays(1))->plainTextToken;
 
                 return response()->json([
-                    'user' => $user,
-                    'token' => $token,
+                    'token' => $token
                 ], 200);
             }
         }
