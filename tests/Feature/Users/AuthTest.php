@@ -70,7 +70,7 @@ class AuthTest extends TestCase
     }
     public function testLogout(): void
     {
-        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->delete("/api/logout");
+        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->post("/api/logout");
         $response->assertStatus(200);
     }
 }

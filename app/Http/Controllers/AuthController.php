@@ -45,8 +45,8 @@ class AuthController extends Controller
                                 'message' => 'Почта и пароль не совпадают'
                             ], 401);
                         } else {
-                            $token = $user->createToken('restToken', ['*'], Carbon::now()->addDays(1))->plainTextToken;
-//                            $token = $user->createToken('restToken')->plainTextToken;
+//                            $token = $user->createToken('restToken', ['*'], Carbon::now()->addDays(1))->plainTextToken;
+                            $token = $user->createToken('restToken')->plainTextToken;
                             return response()->json([
                                 'token' => $token
                             ], 200);
