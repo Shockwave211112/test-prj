@@ -50,11 +50,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Успешный вход
+                $ref: '#/components/schemas/AuthToken'
         default:
           description: Ошибка валидации
           content:
@@ -1447,6 +1443,9 @@ components:
     AuthToken:
       type: object
       properties:
+        user_role:
+          type: integer
+          example: 1
         token:
           type: string
           example: jubRK7xOEha15yEFB0hMXu0JXeh6of7u1JlSFSSf
