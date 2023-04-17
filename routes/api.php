@@ -4,6 +4,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DishController;
 use App\Http\Controllers\NewPasswordController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ReportsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -37,6 +38,7 @@ Route::get('/categories/{id}', [CategoryController::class, 'show']);
 Route::group(['middleware' => ['auth:sanctum']], function()
 {
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/reports', [ReportsController::class, 'index']);
     //USERS
     Route::get('/users', [UserController::class, 'index']);
     Route::post('/users', [UserController::class, 'store']);

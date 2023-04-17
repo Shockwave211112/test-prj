@@ -6,10 +6,12 @@ namespace App\Providers;
 use App\Models\Category;
 use App\Models\Dish;
 use App\Models\Order;
+use App\Models\Reports;
 use App\Models\User;
 use App\Policies\CategoryPolicy;
 use App\Policies\DishPolicy;
 use App\Policies\OrderPolicy;
+use App\Policies\ReportPolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -25,7 +27,8 @@ class AuthServiceProvider extends ServiceProvider
         User::class => UserPolicy::class,
         Category::class => CategoryPolicy::class,
         Dish::class => DishPolicy::class,
-        Order::class => OrderPolicy::class
+        Order::class => OrderPolicy::class,
+        Reports::class => ReportPolicy::class
     ];
 
     /**

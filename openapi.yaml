@@ -1185,6 +1185,55 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error404"
+  /reports:
+    get:
+      summary: Показ отчетов по дням
+      description: Доступно суперадминам и админам
+      tags:
+        - Reports
+      operationId: indexReports
+      parameters:
+        - in: query
+          name: total_orders
+          example: http://lar-test-sw.ru/api/reports?total_orders=2
+          description: Поиск по количеству заказов за день
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: total_profit
+          example: http://lar-test-sw.ru/api/reports?total_profit=2222
+          description: Поиск по прибыли за день
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: created_at
+          example: http://lar-test-sw.ru/api/reports?created_at={date}
+          description: Поиск по дате отчета
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: orderBy
+          example: http://lar-test-sw.ru/api/reports?orderBy=total_cost
+          description: Сортировка по количеству заказов/сумме прибыли/дате создания
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Список отчетов
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Reports"
+        default:
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorValidation"
 
 
 components:
@@ -1790,7 +1839,80 @@ components:
         is_closed:
           type: boolean
           example: 1
-
+    Report:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        total_orders:
+          type: integer
+          example: 2
+        total_profit:
+          type: integer
+          example: 2222
+        created_at:
+          type: string
+          example: 2023-04-11T12:12:48.000000Z
+        updated_at:
+          type: string
+          example: 2023-04-11T12:12:48.000000Z
+    Reports:
+      type: array
+      items:
+        properties:
+          current_page:
+            type: integer
+            example: 1
+          data:
+            type: array
+            items:
+              $ref: '#/components/schemas/reports'
+          first_page_url:
+            type: string
+            example: http://lar-test-sw.ru/api/reports?page=1
+          from:
+            type: integer
+            example: 1
+          last_page:
+            type: integer
+            example: 2
+          last_page_url:
+            type: string
+            example: http://lar-test-sw.ru/api/reports?page=2
+          links:
+            type: array
+            items:
+              type: object
+              description: Ссылки на страницы - следующая, предыдущая, 1-2-3-4-5 и т.д..
+              properties:
+                url:
+                  type: string
+                  example: http://lar-test-sw.ru/api/reports?page=1
+                label:
+                  type: string
+                  example: "1"
+                active:
+                  type: boolean
+                  example: true
+          next_page_url:
+            type: string
+            example: http://lar-test-sw.ru/api/reports?page=2
+          path:
+            type: string
+            example: http://lar-test-sw.ru/api/reports
+          per_page:
+            type: integer
+            example: 10
+          prev_page_url:
+            type: string
+            example: null
+          to:
+            type: integer
+            example: 10
+          total:
+            type: integer
+            example: 15
     Error404:
       type: object
       properties:

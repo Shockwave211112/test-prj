@@ -28,12 +28,12 @@ class ReportCommand extends Command
      */
     public function handle(): void
     {
-        $date = Carbon::now()->toDateString();
+        $date = Carbon::yesterday()->toDateString();
+        $orders = Order::where([['closed_at', 'like', "%{$date}%"], ['is_closed', '=', 'true']])->get();
         if($orders)
         {
-        $orders = Order::where([['closed_at', 'like', "%{$date}%"], ['is_closed', '=', 'true']])->get();
-        $total_orders = $orders->count();
-        $total_profit = $orders->sum('total_cost');
+            $total_orders = $orders->count();
+            $total_profit = $orders->sum('total_cost');
 
             $newReport = new Reports(['total_orders' => $total_orders, 'total_profit' => $total_profit]);
             $newReport->save();
