@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Users;
+namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -50,10 +50,13 @@ class UsersTest extends TestCase
     {
         $randomUser = User::find(random_int(2, User::count()));
         $user = User::factory()->make();
-        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->put("/api/users/{$randomUser->id}/update", [$user]);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->put("/api/users/{$randomUser->id}/update", [
+            "name" => $user->name,
+            "email" => $user->email
+        ]);
         $this->assertDatabaseHas('users', [
-            'name' => $randomUser->name,
-            'email' => $randomUser->email
+            'name' => $user->name,
+            'email' => $user->email
         ]);
         $response->assertStatus(200);
     }

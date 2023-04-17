@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: REST API для ресторана, Laravel, PHP
-  description: iz4GsmrfBVPARkSz9ggvm2QuuJtzQGUrkXQSojsm     admin@admin.ru admin    1111
+  description: THE6VubV5ERmWKzQ9BuL5Ub9liMVB0bUYHMamVkm     admin@admin.ru admin    1111
   version: '0.1'
 servers:
   - url: http://lar-test-sw.ru/api/
