@@ -24,7 +24,6 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'number' => ['required', 'string'],
             'is_closed' => ['required', 'boolean']
         ];
     }

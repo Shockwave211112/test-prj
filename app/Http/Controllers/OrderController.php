@@ -199,7 +199,7 @@ class OrderController extends Controller
         else
         {
             return response()->json([
-                'message' => 'Блюдо не найдено'
+                'message' => 'Заказ не найден'
             ], 404);
         }
     }
@@ -207,7 +207,7 @@ class OrderController extends Controller
     {
         $this->authorize('update', auth()->user());
         $data = $request->validated();
-        $order = Order::firstWhere('number', $data['number']);
+        $order = Order::find($id);
         if ($order)
         {
             if($data['is_closed'])

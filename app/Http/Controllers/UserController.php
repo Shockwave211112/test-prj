@@ -123,22 +123,4 @@ class UserController extends Controller
             ], 404);
         }
     }
-    public function restore($id)
-    {
-        $this->authorize('restore', auth()->user());
-        $user = User::withTrashed()->find($id);
-        if($user)
-        {
-            $user->restore();
-            return response()->json([
-                'message' => 'Пользователь успешно восстановлен'
-            ], 200);
-        }
-        else
-        {
-            return response()->json([
-                'message' => 'Пользователь не найден'
-            ], 404);
-        }
-    }
 }

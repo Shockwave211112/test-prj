@@ -61,7 +61,7 @@ class UsersTest extends TestCase
     {
         $randomUser = User::find(random_int(2, User::count()));
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->delete("/api/users/{$randomUser->id}/delete");
-        $this->assertSoftDeleted('users', [
+        $this->assertDatabaseMissing('users', [
             'name' => $randomUser->name,
             'email' => $randomUser->email
         ]);
