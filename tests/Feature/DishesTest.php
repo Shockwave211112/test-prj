@@ -2,11 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Models\Category;
 use App\Models\Dish;
 use App\Models\User;
 use Illuminate\Http\Testing\File;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -33,7 +31,7 @@ class DishesTest extends TestCase
             'price' => $dish->price,
             'composition' => $dish->composition
         ]);
-        $this->assertDatabaseHas('categories', [
+        $this->assertDatabaseHas('dishes', [
             'name' => $dish->name
         ]);
         $dish = Dish::all()->last();
@@ -42,14 +40,15 @@ class DishesTest extends TestCase
     }
     public function testShow(): void
     {
-        $randDish = Dish::find(random_int(1, Dish::count()));
-        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get("/api/dish/{$randDish->id}");
+        $randDish = Dish::all()->random();
+        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get("/api/dishes/{$randDish->id}");
         $response->assertStatus(200);
+
     }
     public function testEdit(): void
     {
-        $randDish = Dish::find(random_int(1, Dish::count()));
-        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get("/api/dish/{$randDish->id}/edit");
+        $randDish = Dish::all()->random();
+        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get("/api/dishes/{$randDish->id}/edit");
         $response->assertStatus(200);
     }
     public function testUpdate(): void
@@ -57,12 +56,16 @@ class DishesTest extends TestCase
         Storage::fake('local');
         $dish = Dish::factory()->make();
         $fakeImg = File::create('test-image.jpeg', 100);
-        $randDish = Dish::find(random_int(1, Dish::count()));
-        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->put("/api/categories/{$randDish->id}/update", [
-            "name" => $dish->name,
-            "img" => $fakeImg
+        $randDish = Dish::all()->random();
+        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->put("/api/dishes/{$randDish->id}/update", [
+            'name' => $dish->name,
+            'img' => $fakeImg,
+            'category_id' => $dish->category_id,
+            'calories' => $dish->calories,
+            'price' => $dish->price,
+            'composition' => $dish->composition
             ]);
-        $this->assertDatabaseHas('categories', [
+        $this->assertDatabaseHas('dishes', [
             'name' => $dish->name
         ]);
         $dish = Dish::where('name', '=', $dish->name)->first();
@@ -71,11 +74,10 @@ class DishesTest extends TestCase
     }
     public function testDelete(): void
     {
-        $randDish = Dish::find(random_int(1, Dish::count()));
-        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->delete("/api/users/{$randDish->id}/delete");
-        $this->assertDatabaseMissing('users', [
-            'name' => $randDish->name,
-            'email' => $randDish->email
+        $randDish = Dish::all()->random();
+        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->delete("/api/dishes/{$randDish->id}/delete");
+        $this->assertDatabaseMissing('dishes', [
+            'name' => $randDish->name
         ]);
         $response->assertStatus(200);
     }

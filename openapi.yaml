@@ -1691,8 +1691,8 @@ components:
           type: integer
           example: 1
         number:
-          type: string
-          example: 127F
+          type: integer
+          example: 421
         count:
           type: integer
           example: 5

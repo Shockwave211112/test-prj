@@ -37,13 +37,13 @@ class CategoriesTest extends TestCase
     }
     public function testShow(): void
     {
-        $randCategory = Category::find(random_int(1, Category::count()));
+        $randCategory = Category::all()->random();
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get("/api/categories/{$randCategory->id}");
         $response->assertStatus(200);
     }
     public function testEdit(): void
     {
-        $randCategory = Category::find(random_int(1, Category::count()));
+        $randCategory = Category::all()->random();
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get("/api/categories/{$randCategory->id}/edit");
         $response->assertStatus(200);
     }
@@ -52,7 +52,7 @@ class CategoriesTest extends TestCase
         Storage::fake('local');
         $category = Category::factory()->make();
         $fakeImg = File::create('test-image.jpeg', 100);
-        $randCategory = Category::find(random_int(1, Category::count()));
+        $randCategory = Category::all()->random();
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->put("/api/categories/{$randCategory->id}/update", [
             "name" => $category->name,
             "img" => $fakeImg
@@ -66,11 +66,10 @@ class CategoriesTest extends TestCase
     }
     public function testDelete(): void
     {
-        $randCategory = Category::find(random_int(1, Category::count()));
-        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->delete("/api/users/{$randCategory->id}/delete");
-        $this->assertDatabaseMissing('users', [
-            'name' => $randCategory->name,
-            'email' => $randCategory->email
+        $randCategory = Category::all()->random();
+        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->delete("/api/categories/{$randCategory->id}/delete");
+        $this->assertDatabaseMissing('categories', [
+            'name' => $randCategory->name
         ]);
         $response->assertStatus(200);
     }

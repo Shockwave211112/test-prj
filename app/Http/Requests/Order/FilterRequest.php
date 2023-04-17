@@ -22,7 +22,7 @@ class FilterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'number' => ['string'],
+            'number' => ['numeric'],
             'total_cost' => ['numeric'],
             'user_id' => ['numeric', 'exists:users,id'],
             'closed_at' => ['date'],

@@ -36,19 +36,19 @@ class UsersTest extends TestCase
     }
     public function testShow(): void
     {
-        $randomUser = User::find(random_int(2, User::count()));
+        $randomUser = User::all()->random();
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get("/api/users/{$randomUser->id}");
         $response->assertStatus(200);
     }
     public function testEdit(): void
     {
-        $randomUser = User::find(random_int(2, User::count()));
+        $randomUser = User::all()->random();
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get("/api/users/{$randomUser->id}/edit");
         $response->assertStatus(200);
     }
     public function testUpdate(): void
     {
-        $randomUser = User::find(random_int(2, User::count()));
+        $randomUser = User::all()->random();
         $user = User::factory()->make();
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->put("/api/users/{$randomUser->id}/update", [
             "name" => $user->name,
@@ -62,7 +62,7 @@ class UsersTest extends TestCase
     }
     public function testDelete(): void
     {
-        $randomUser = User::find(random_int(2, User::count()));
+        $randomUser = User::all()->random();
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->delete("/api/users/{$randomUser->id}/delete");
         $this->assertDatabaseMissing('users', [
             'name' => $randomUser->name,
