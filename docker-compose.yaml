@@ -1,0 +1,39 @@
+version: '3.1'
+
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/nginx.dockerfile
+    ports:
+      - 8070:80
+    links:
+      - php
+    volumes:
+      - ./:/var/www/laravel-docker
+
+  php:
+    build:
+      context: .
+      dockerfile: docker/php.dockerfile
+    volumes:
+      - ./:/var/www/laravel-docker
+      - ./.env.docker:/var/www/laravel-docker/.env
+    links:
+      - postgres
+
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: test-prj
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    ports:
+      - 5433:5432
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080

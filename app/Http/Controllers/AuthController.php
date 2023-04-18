@@ -19,7 +19,7 @@ class AuthController extends Controller
         $token = $user->createToken('restToken')->plainTextToken;
 
         return response()->json([
-            'user_role' => $user->role_id,
+            'user_role' => $user->role->id,
             'token' => $token
         ], 200);
     }
@@ -49,7 +49,7 @@ class AuthController extends Controller
 //                            $token = $user->createToken('restToken', ['*'], Carbon::now()->addDays(1))->plainTextToken;
                             $token = $user->createToken('restToken')->plainTextToken;
                             return response()->json([
-                                'user_role' => $user->role_id,
+                                'user_role' => $user->role->id,
                                 'token' => $token
                             ], 200);
                         }
@@ -78,7 +78,7 @@ class AuthController extends Controller
                 $token = $user->createToken('restToken', ['*'], Carbon::now()->addDays(1))->plainTextToken;
 
                 return response()->json([
-                    'user_role' => $user->role_id,
+                    'user_role' => $user->role->id,
                     'token' => $token
                 ], 200);
             }
