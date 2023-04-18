@@ -1866,7 +1866,7 @@ components:
           data:
             type: array
             items:
-              $ref: '#/components/schemas/reports'
+              $ref: '#/components/schemas/Report'
           first_page_url:
             type: string
             example: http://lar-test-sw.ru/api/reports?page=1

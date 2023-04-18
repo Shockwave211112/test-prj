@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -23,7 +24,7 @@ class DishFactory extends Factory
             'img' => fake()->imageUrl(),
             'calories' => fake()->randomDigitNotNull,
             'price' => fake()->randomDigitNotNull,
-            'category_id' => fake()->numberBetween(1, DB::table('roles')->get()->count()),
+            'category_id' => Category::all()->random(),
             'composition' => fake()->text(200)
         ];
     }
