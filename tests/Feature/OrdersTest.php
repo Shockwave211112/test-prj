@@ -6,15 +6,20 @@ use App\Models\Dish;
 use App\Models\DishOrder;
 use App\Models\Order;
 use App\Models\User;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Testing\File;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class OrdersTest extends TestCase
 {
-    /**
-     * A basic feature test example.
-     */
+    use DatabaseMigrations;
+    public function setUp(): void
+    {
+        parent::setUp();
+        $this->seed('DatabaseSeeder');
+    }
     public function testIndex(): void
     {
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get('/api/orders');
@@ -32,7 +37,6 @@ class OrdersTest extends TestCase
         $this->assertDatabaseHas('orders', [
             "number" => $number
         ]);
-
         $response->assertStatus(200);
     }
     public function testShow(): void

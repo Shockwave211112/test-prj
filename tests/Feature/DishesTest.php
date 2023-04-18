@@ -4,15 +4,20 @@ namespace Tests\Feature;
 
 use App\Models\Dish;
 use App\Models\User;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Testing\File;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class DishesTest extends TestCase
 {
-    /**
-     * A basic feature test example.
-     */
+    use DatabaseMigrations;
+    public function setUp(): void
+    {
+        parent::setUp();
+        $this->seed();
+    }
     public function testIndex(): void
     {
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get('/api/dishes');
@@ -57,7 +62,6 @@ class DishesTest extends TestCase
         $dish = Dish::factory()->make();
         $fakeImg = File::create('test-image.jpeg', 100);
         $randDish = Dish::all()->random();
-        dump($dish->name);
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->put("/api/dishes/{$randDish->id}/update", [
             'name' => $dish->name,
             'img' => $fakeImg,
@@ -69,8 +73,8 @@ class DishesTest extends TestCase
         $this->assertDatabaseHas('dishes', [
             'name' => $dish->name,
         ]);
-//        $dish = Dish::where('name', '=', $dish->name)->first();
-//        Storage::disk('local')->assertExists($dish->img);
+        $dish = Dish::where('name', '=', $dish->name)->first();
+        Storage::disk('local')->assertExists($dish->img);
         $response->assertStatus(200);
     }
     public function testDelete(): void

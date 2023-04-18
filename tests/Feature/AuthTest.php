@@ -3,15 +3,20 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
 {
-    /**
-     * A basic feature test example.
-     */
+    use DatabaseMigrations;
+    public function setUp(): void
+    {
+        parent::setUp();
+        $this->artisan('db:seed');
+    }
     public function testRegister(): void
     {
         $user = User::factory()->make();
@@ -73,4 +78,5 @@ class AuthTest extends TestCase
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->post("/api/logout");
         $response->assertStatus(200);
     }
+
 }
