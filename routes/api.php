@@ -23,7 +23,10 @@ use App\Http\Controllers\AuthController;
 Route::post('/register', [AuthController::class, 'register'])->middleware('guest');
 
 Route::post('/password/forgot', [NewPasswordController::class, 'forgot'])->middleware('guest');
-Route::post('/password/reset', [NewPasswordController::class, 'reset'])->middleware('guest')->name('password.reset');
+//Route::get('/password/reset/{token}/{email}', [NewPasswordController::class, 'getreset'])->middleware('guest')->name('password.reset.get');
+Route::post('/password/reset/getpin', [NewPasswordController::class, 'getreset']);
+//Route::post('/password/reset', [NewPasswordController::class, 'reset'])->middleware('guest')->name('password.reset.post');
+Route::post('/password/reset', [NewPasswordController::class, 'reset']);
 Route::post('/login', [AuthController::class, 'login'])->middleware('guest');
 
 //DISHES

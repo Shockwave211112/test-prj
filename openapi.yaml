@@ -140,10 +140,48 @@ paths:
                   message:
                     type: string
                     example: Ошибка, что-то пошло не так
+  /password/reset/getpin:
+    post:
+      summary: Подтверждение пин-кода
+      description: Доступен 15 минут
+      tags:
+        - Auth
+      operationId: reset-password-getpin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pin_code:
+                  type: integer
+                  example: 789123
+      responses:
+        '200':
+          description: Пароль сменён
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: Пароль сменен
+        '404':
+          description: Ошибка пина
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: Пин не найден
   /password/reset:
     post:
-      summary: После перехода по ссылке из письма
-      description: Доступен только по ссылке, одноразовый
+      summary: Смена пароля
+      description: Доступна 15 минут
       tags:
         - Auth
       operationId: reset-password
@@ -163,9 +201,9 @@ paths:
                 properties:
                   status:
                     type: string
-                    example: Your password has been reset.
-        default:
-          description: Ошибка токена
+                    example: Пароль сменен
+        '404':
+          description: Ошибка пина
           content:
             application/json:
               schema:
@@ -173,7 +211,7 @@ paths:
                 properties:
                   status:
                     type: string
-                    example: This password reset token is invalid.
+                    example: Пин не найден
 #==================================USERS====================================================================#
   /users:
     get:
@@ -1308,20 +1346,14 @@ components:
     PasswordResetRequest:
       type: object
       required:
-        - token
-        - email
+        - pin_code
         - password
         - password_confirmation
       properties:
-        token:
-          type: string
-          example: jubRK7xOEha15yEFB0hMXu0JXeh6of7u1JlSFSSf
-          description: Обязательное, вставляется само после перехода по ссылке
-        email:
-          type: string
-          format: email
-          example: ivanov@gmail.com
-          description: Обязательное, вставляется само после перехода по ссылке
+        pin_code:
+          type: integer
+          example: 756779
+          description: Обязательное, 6 цифр
         password:
           type: string
           example: qwerty12345
