@@ -10,11 +10,10 @@
       <user-name>postgres</user-name>
       <schema-mapping>
         <introspection-scope>
-          <node negative="1">
-            <node kind="database" qname="test-prj">
-              <node kind="schema" negative="1" />
-            </node>
-            <node kind="database" qname="laravel-testing" />
+          <node kind="database">
+            <name qname="laravel-testing" />
+            <name qname="test-prj" />
+            <node kind="schema" negative="1" />
           </node>
         </introspection-scope>
       </schema-mapping>

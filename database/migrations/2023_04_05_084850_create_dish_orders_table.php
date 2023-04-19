@@ -21,7 +21,7 @@ return new class extends Migration
             $table->index('dish_id', 'dish_order_dish_idx');
             $table->index('order_id', 'dish_order_order_idx');
 
-            $table->foreign('dish_id', 'dish_order_dish_fk')->on('dishes')->references('id');
+            $table->foreign('dish_id', 'dish_order_dish_fk')->on('dishes')->references('id')->onDelete('cascade');
             $table->foreign('order_id', 'dish_order_order_fk')->on('orders')->references('id')->onDelete('cascade');
 
             $table->timestamps();

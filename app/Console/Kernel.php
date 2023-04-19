@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->command('create:report')->dailyAt("01:00:00")->runInBackground();
+        $schedule->command('pin:clear')->everyThreeHours()->runInBackground();
     }
 
     /**
