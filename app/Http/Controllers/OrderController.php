@@ -20,7 +20,7 @@ class OrderController extends Controller
 {
     public function index(FilterRequest $request)
     {
-        $this->authorize('view', auth()->user());
+        $this->authorize('view', Order::class);
         $data = $request->validated();
         $filter = app()->make(OrderFilter::class, ['queryParams' => array_filter($data)]);
         $query = Order::filter($filter);
@@ -59,7 +59,7 @@ class OrderController extends Controller
 
     public function store(StoreRequest $request)
     {
-        $this->authorize('create', auth()->user());
+        $this->authorize('create', Order::class);
         $data = $request->validated();
         $order = Order::create($data);
         if ($order)
@@ -77,7 +77,7 @@ class OrderController extends Controller
     }
     public function updateDish(UpdateDishRequest $request, $id)
     {
-        $this->authorize('update', auth()->user());
+        $this->authorize('update', Order::class);
         $data = $request->validated();
         $order = Order::find($id);
         if($order)
@@ -98,6 +98,7 @@ class OrderController extends Controller
                 return response()->json([
                     "message" => "Блюдо добавлено в заказ"
                 ], 200);
+
             }
             else
             {   //изменение счетчика блюда в таблице DISH_ORDERS, если такое блюдо уже есть в заказе
@@ -137,7 +138,7 @@ class OrderController extends Controller
     }
     public function delDish(Request $request, $id, $dish_id)
     {
-        $this->authorize('update', auth()->user());
+        $this->authorize('update', Order::class);
         $order = Order::find($id);
         if($order)
         {
@@ -166,7 +167,7 @@ class OrderController extends Controller
 
     public function show($id)
     {
-        $this->authorize('view', auth()->user());
+        $this->authorize('view', Order::class);
         $order = Order::find($id);
 
         if($order)
@@ -186,7 +187,7 @@ class OrderController extends Controller
     }
     public function edit($id)
     {
-        $this->authorize('update', auth()->user());
+        $this->authorize('update', Order::class);
         $order = Order::find($id);
         if($order)
         {
@@ -205,7 +206,7 @@ class OrderController extends Controller
     }
     public function update(UpdateRequest $request, int $id)
     {
-        $this->authorize('update', auth()->user());
+        $this->authorize('update', Order::class);
         $data = $request->validated();
         $order = Order::find($id);
         if ($order)
@@ -228,7 +229,7 @@ class OrderController extends Controller
     }
     public function destroy($id)
     {
-        $this->authorize('delete', auth()->user());
+        $this->authorize('delete', Order::class);
         $order = Order::find($id);
         if($order)
         {

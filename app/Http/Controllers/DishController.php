@@ -48,7 +48,7 @@ class DishController extends Controller
 
     public function store(StoreRequest $request)
     {
-        $this->authorize('create', auth()->user());
+        $this->authorize('create', Dish::class);
         $data = $request->validated();
         $type = "dish";
         $data['img'] = $this->service->storeImage($request, $type);
@@ -82,7 +82,7 @@ class DishController extends Controller
     }
     public function edit($id)
     {
-        $this->authorize('update', auth()->user());
+        $this->authorize('update', Dish::class);
         $dish = Dish::find($id);
         if($dish)
         {
@@ -97,7 +97,7 @@ class DishController extends Controller
     }
     public function update(UpdateRequest $request, int $id)
     {
-        $this->authorize('update', auth()->user());
+        $this->authorize('update', Dish::class);
         $data = $request->validated();
         $dish = Dish::find($id);
         if ($dish)
@@ -121,7 +121,7 @@ class DishController extends Controller
     }
     public function destroy($id)
     {
-        $this->authorize('delete', auth()->user());
+        $this->authorize('delete', Dish::class);
         $dish = Dish::find($id);
         if($dish)
         {

@@ -62,17 +62,16 @@ class OrdersTest extends TestCase
         $randOrder = Order::all()->random();
         $dish = Dish::all()->random();
         $count = random_int(1, 10);
-        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->put("/api/orders/{$randOrder->id}/edit/updateDish", [
+        $response = $this->actingAs(User::factory()->create(['role_id' => 3]))->put("/api/orders/{$randOrder->id}/edit/updateDish", [
             'dish' => $dish->id,
             'count' => $count
         ]);
+        $response->assertStatus(200);
         $this->assertDatabaseHas('dish_orders', [
             'dish_id' => $dish->id,
             'count' => $count,
             'order_id' => $randOrder->id
         ]);
-
-        $response->assertStatus(200);
     }
     public function testDelDish(): void
     {

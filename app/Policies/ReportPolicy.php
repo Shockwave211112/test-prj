@@ -2,14 +2,14 @@
 
 namespace App\Policies;
 
+use App\Models\Role;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class ReportPolicy
 {
 
-    public function view(User $user, User $model): bool
+    public function view(User $user): bool
     {
-        return in_array($user->role_id, [1, 2]);
+        return in_array($user->role_id, [Role::IS_SUPERADMIN, Role::IS_ADMIN]);
     }
 }

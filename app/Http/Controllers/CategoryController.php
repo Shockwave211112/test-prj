@@ -36,7 +36,7 @@ class CategoryController extends Controller
 
     public function store(StoreRequest $request)
     {
-        $this->authorize('create', auth()->user());
+        $this->authorize('create', Category::class);
         $data = $request->validated();
         $type = "category";
         $data['img'] = $this->service->storeImage($request, $type);
@@ -70,7 +70,7 @@ class CategoryController extends Controller
     }
     public function edit($id)
     {
-        $this->authorize('update', auth()->user());
+        $this->authorize('update', Category::class);
         $category = Category::find($id);
         if($category)
         {
@@ -85,7 +85,7 @@ class CategoryController extends Controller
     }
     public function update(UpdateRequest $request, int $id)
     {
-        $this->authorize('update', auth()->user());
+        $this->authorize('update', Category::class);
         $data = $request->validated();
         $category = Category::find($id);
         if($category)
@@ -108,7 +108,7 @@ class CategoryController extends Controller
     }
     public function destroy($id)
     {
-        $this->authorize('delete', auth()->user());
+        $this->authorize('delete', Category::class);
         $category = Category::find($id);
         if($category)
         {
