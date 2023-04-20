@@ -42,19 +42,24 @@ class DishesTest extends TestCase
         $dish = Dish::all()->last();
         Storage::disk('local')->assertExists($dish->img);
         $response->assertStatus(200);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->post('/api/dishes', []);
+        $response->assertStatus(302);
     }
     public function testShow(): void
     {
         $randDish = Dish::all()->random();
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get("/api/dishes/{$randDish->id}");
         $response->assertStatus(200);
-
+        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get("/api/dishes/99999999");
+        $response->assertStatus(404);
     }
     public function testEdit(): void
     {
         $randDish = Dish::all()->random();
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get("/api/dishes/{$randDish->id}/edit");
         $response->assertStatus(200);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get("/api/dishes/99999999/edit");
+        $response->assertStatus(404);
     }
     public function testUpdate(): void
     {
@@ -76,6 +81,8 @@ class DishesTest extends TestCase
         $dish = Dish::where('name', '=', $dish->name)->first();
         Storage::disk('local')->assertExists($dish->img);
         $response->assertStatus(200);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->put("/api/dishes/999999/update");
+        $response->assertStatus(404);
     }
     public function testDelete(): void
     {
@@ -85,5 +92,7 @@ class DishesTest extends TestCase
             'name' => $randDish->name
         ]);
         $response->assertStatus(200);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->delete("/api/dishes/9999999/delete");
+        $response->assertStatus(404);
     }
 }

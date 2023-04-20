@@ -159,15 +159,7 @@ paths:
                   example: 789123
       responses:
         '200':
-          description: Пароль сменён
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: Пароль сменен
+          description: Пин действителен
         '404':
           description: Ошибка пина
           content:
@@ -178,6 +170,16 @@ paths:
                   status:
                     type: string
                     example: Пин не найден
+        '405':
+          description: Ошибка пина
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: Пин не действителен
   /password/reset:
     post:
       summary: Смена пароля
@@ -212,6 +214,16 @@ paths:
                   status:
                     type: string
                     example: Пин не найден
+        '405':
+          description: Ошибка пина
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: Пин не действителен
 #==================================USERS====================================================================#
   /users:
     get:

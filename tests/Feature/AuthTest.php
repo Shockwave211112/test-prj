@@ -2,11 +2,18 @@
 
 namespace Tests\Feature;
 
+use App\Models\ResetPin;
 use App\Models\User;
+use Hash;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Mockery;
+use Mockery\Matcher\Closure;
+use PhpParser\PrettyPrinter\Standard;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
@@ -49,6 +56,86 @@ class AuthTest extends TestCase
         );
         $response->assertStatus(200);
         $response->assertJsonPath('data.token', csrf_token());
+    }
+    public function testMailSend(): void
+    {
+        $user = User::all()->random();
+
+        $response = $this->post('/api/password/forgot',
+            [
+                'email' => $user->email,
+            ]
+        );
+        $response->assertStatus(200);
+        $response = $this->post('/api/password/forgot',
+            [
+                'email' => 'efasofoasf@mail.net',
+            ]
+        );
+        $response->assertStatus(404);
+    }
+    public function testPinInput(): void
+    {
+        $user = User::all()->random();
+        $reset_pin = ResetPin::create(['email' => $user->email, 'pin_code' => 111333, 'expires_at' => Carbon::tomorrow()]);
+        $response = $this->post('/api/password/reset/getpin',
+            [
+                'pin_code' => $reset_pin->pin_code,
+            ]
+        );
+        $response->assertStatus(200);
+        $response = $this->post('/api/password/reset/getpin',
+            [
+                'pin_code' => 999999,
+            ]
+        );
+        $response->assertStatus(404);
+    }
+    public function testNewPassword(): void
+    {
+        $user = User::all()->random();
+        $newUser = User::make(['password' => 'abobus12345']);
+        $reset_pin = ResetPin::create(['email' => $user->email, 'pin_code' => 111333, 'expires_at' => Carbon::tomorrow()]);
+        $response = $this->post('/api/password/reset',
+            [
+                'pin_code' => $reset_pin->pin_code,
+                'password' => $newUser->password,
+                'password_confirmation' => $newUser->password
+            ]
+        );
+        $this->assertTrue(Hash::check($newUser->password, User::where('email', '=', $user->email)
+            ->first()->password));
+        $response->assertStatus(200);
+        $response = $this->post('/api/password/reset',
+            [
+                'pin_code' => 111111,
+                'password' => $newUser->password,
+                'password_confirmation' => $newUser->password
+            ]
+        );
+        $response->assertStatus(404);
+    }
+    public function testPinExpire(): void
+    {
+        $user = User::all()->random();
+        $reset_pin = ResetPin::create(['email' => $user->email, 'pin_code' => 111333, 'expires_at' => Carbon::now()->subHours(12)]);
+        $this->assertDatabaseHas('reset_pins', [
+            'pin_code' => $reset_pin->pin_code
+        ]);
+        $response = $this->post('/api/password/reset/getpin',
+            [
+                'pin_code' => $reset_pin->pin_code,
+            ]
+        );
+        $response->assertStatus(405);
+        $response = $this->post('/api/password/reset',
+            [
+                'pin_code' => $reset_pin->pin_code,
+                'password' => "qwerty12345",
+                'password_confirmation' => "qwerty12345"
+            ]
+        );
+        $response->assertStatus(405);
     }
 
     public function testWaiterAuth(): void

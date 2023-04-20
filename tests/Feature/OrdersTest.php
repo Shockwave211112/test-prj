@@ -38,18 +38,24 @@ class OrdersTest extends TestCase
             "number" => $number
         ]);
         $response->assertStatus(200);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->post('/api/orders');
+        $response->assertStatus(302);
     }
     public function testShow(): void
     {
         $randOrder = Order::all()->random();
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get("/api/orders/{$randOrder->id}");
         $response->assertStatus(200);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get("/api/orders/99999999");
+        $response->assertStatus(404);
     }
     public function testEdit(): void
     {
         $randOrder = Order::all()->random();
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get("/api/orders/{$randOrder->id}/edit");
         $response->assertStatus(200);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get("/api/orders/99999999/edit");
+        $response->assertStatus(404);
     }
     public function testAddDish(): void
     {
@@ -90,6 +96,8 @@ class OrdersTest extends TestCase
             'is_closed' => true
         ]);
         $response->assertStatus(200);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->put("/api/orders/999999/update");
+        $response->assertStatus(404);
     }
     public function testDelete(): void
     {
@@ -99,5 +107,7 @@ class OrdersTest extends TestCase
             'id' => $randOrder->id
         ]);
         $response->assertStatus(200);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->delete("/api/orders/99999999/delete");
+        $response->assertStatus(404);
     }
 }

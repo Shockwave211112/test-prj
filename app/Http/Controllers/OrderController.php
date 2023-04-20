@@ -223,7 +223,7 @@ class OrderController extends Controller
         {
             return response()->json([
                 'message' => 'Заказ не найден'
-            ], 500);
+            ], 404);
         }
     }
     public function destroy($id)

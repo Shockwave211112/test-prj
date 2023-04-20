@@ -8,14 +8,8 @@ use App\Http\Requests\Auth\ResetPwd;
 use App\Mail\User\PasswordMail;
 use App\Models\ResetPin;
 use App\Models\User;
-use Illuminate\Auth\Events\PasswordReset;
-use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Str;
 
 class NewPasswordController extends Controller
 {
@@ -37,7 +31,9 @@ class NewPasswordController extends Controller
                 'expires_at' => Carbon::now()->addMinutes(15),
                 'email' => $data['email']
             ]);
-            return back()->with('message', 'Письмо отправлено!');
+            return response()->json([
+                'message' => 'Письмо отправлено'
+            ], 200);
 //            $status = Password::sendResetLink(
 //                $request->only('email')
 //            );
@@ -66,18 +62,23 @@ class NewPasswordController extends Controller
     public function getreset(PinReset $request) {
         $data = $request->validated();
         $reset_pin = ResetPin::where('pin_code', '=', $data['pin_code'])->first();
-        if($reset_pin && $reset_pin->expires_at > Carbon::now())
+        if($reset_pin)
         {
-            $user = User::where('email', '=', $reset_pin->email)->first();
-            if ($user)
-            {
-                return response()->json([], 200);
+            if($reset_pin->expires_at > Carbon::now()) {
+                $user = User::where('email', '=', $reset_pin->email)->first();
+                if ($user) {
+                    return response()->json([], 200);
+                } else {
+                    return response()->json([
+                        'message' => 'Пользователь не найден'
+                    ], 404);
+                }
             }
             else
             {
                 return response()->json([
-                    'message' => 'Пользователь не найден'
-                ], 404);
+                    'message' => 'Срок действия PIN истёк'
+                ], 405);
             }
         }
         else
@@ -93,22 +94,28 @@ class NewPasswordController extends Controller
         $data = $request->validated();
         $data['password'] = bcrypt($data['password']);
         $reset_pin = ResetPin::where('pin_code', '=', $data['pin_code'])->first();
-        if($reset_pin->expires_at > Carbon::now()) {
-            $user = User::whereEmail($reset_pin->email)->first();
-            if ($user) {
-                $user->update(['password' => $data['password']]);
-                $reset_pin->truncate();
-                return response()->json([], 200);
+        if($reset_pin) {
+            if ($reset_pin->expires_at > Carbon::now()) {
+                $user = User::whereEmail($reset_pin->email)->first();
+                if ($user) {
+                    $user->update(['password' => $data['password']]);
+                    $reset_pin->truncate();
+                    return response()->json([], 200);
+                } else {
+                    return response()->json([
+                        'message' => 'Пользователь не найден'
+                    ], 404);
+                }
             } else {
                 return response()->json([
-                    'message' => 'Пользователь не найден'
-                ], 404);
+                    'message' => 'У PIN истёк срок действия. Повторите сброс пароля'
+                ], 405);
             }
         }
         else {
             return response()->json([
-                'message' => 'У PIN истёк срок действия. Повторите сброс пароля'
-            ], 405);
+                'message' => 'PIN не найден'
+            ], 404);
         }
 
 //        $status = Password::reset(

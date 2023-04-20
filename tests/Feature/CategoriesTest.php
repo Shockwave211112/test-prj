@@ -39,18 +39,24 @@ class CategoriesTest extends TestCase
         $category = Category::all()->last();
         Storage::disk('local')->assertExists($category->img);
         $response->assertStatus(200);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->post('/api/categories', []);
+        $response->assertStatus(302);
     }
     public function testShow(): void
     {
         $randCategory = Category::all()->random();
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get("/api/categories/{$randCategory->id}");
         $response->assertStatus(200);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get("/api/categories/99999999");
+        $response->assertStatus(404);
     }
     public function testEdit(): void
     {
         $randCategory = Category::all()->random();
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get("/api/categories/{$randCategory->id}/edit");
         $response->assertStatus(200);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get("/api/categories/99999999/edit");
+        $response->assertStatus(404);
     }
     public function testUpdate(): void
     {
@@ -68,6 +74,8 @@ class CategoriesTest extends TestCase
         $category = Category::where('name', '=', $category->name)->first();
         Storage::disk('local')->assertExists($category->img);
         $response->assertStatus(200);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->put("/api/categories/999999/update");
+        $response->assertStatus(404);
     }
     public function testDelete(): void
     {
@@ -77,5 +85,7 @@ class CategoriesTest extends TestCase
             'name' => $randCategory->name
         ]);
         $response->assertStatus(200);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->delete("/api/categories/9999999/delete");
+        $response->assertStatus(404);
     }
 }
