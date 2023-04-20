@@ -23,6 +23,7 @@ class CategoriesTest extends TestCase
     {
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get('/api/categories');
         $response->assertStatus(200);
+
     }
     public function testCreation(): void
     {
@@ -41,6 +42,11 @@ class CategoriesTest extends TestCase
         $response->assertStatus(200);
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->post('/api/categories', []);
         $response->assertStatus(302);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 3]))->post('/api/categories', [
+            'name' => 'testName',
+            'img' => $fakeImg
+        ]);
+        $response->assertStatus(403);
     }
     public function testShow(): void
     {
@@ -55,6 +61,8 @@ class CategoriesTest extends TestCase
         $randCategory = Category::all()->random();
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get("/api/categories/{$randCategory->id}/edit");
         $response->assertStatus(200);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 3]))->get("/api/categories/{$randCategory->id}/edit");
+        $response->assertStatus(403);
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get("/api/categories/99999999/edit");
         $response->assertStatus(404);
     }
@@ -76,6 +84,8 @@ class CategoriesTest extends TestCase
         $response->assertStatus(200);
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->put("/api/categories/999999/update");
         $response->assertStatus(404);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 3]))->put("/api/categories/{$randCategory->id}/update");
+        $response->assertStatus(403);
     }
     public function testDelete(): void
     {
@@ -85,6 +95,8 @@ class CategoriesTest extends TestCase
             'name' => $randCategory->name
         ]);
         $response->assertStatus(200);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 3]))->delete("/api/categories/{$randCategory->id}/delete");
+        $response->assertStatus(403);
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->delete("/api/categories/9999999/delete");
         $response->assertStatus(404);
     }

@@ -109,5 +109,7 @@ class OrdersTest extends TestCase
         $response->assertStatus(200);
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->delete("/api/orders/99999999/delete");
         $response->assertStatus(404);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 3]))->delete("/api/orders/{$randOrder->id}/delete");
+        $response->assertStatus(403);
     }
 }

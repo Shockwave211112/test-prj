@@ -20,6 +20,8 @@ class UsersTest extends TestCase
     {
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get('/api/users');
         $response->assertStatus(200);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 3]))->get('/api/users');
+        $response->assertStatus(403);
     }
     public function testCreation(): void
     {
@@ -39,6 +41,15 @@ class UsersTest extends TestCase
         $response->assertStatus(200);
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->post('/api/users');
         $response->assertStatus(302);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 3]))->post('/api/users', [
+            'name' => $user->name,
+            'pin_code' => 4444,
+            'email' => "test@gmail.ru",
+            'password' => $user->password,
+            'password_confirmation' => $user->password,
+            'role_id' => $user->role_id,
+        ]);
+        $response->assertStatus(403);
     }
     public function testShow(): void
     {
@@ -47,6 +58,8 @@ class UsersTest extends TestCase
         $response->assertStatus(200);
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get("/api/users/99999999");
         $response->assertStatus(404);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 3]))->get("/api/users/{$randomUser->id}");
+        $response->assertStatus(403);
     }
     public function testEdit(): void
     {
@@ -55,6 +68,8 @@ class UsersTest extends TestCase
         $response->assertStatus(200);
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get("/api/users/99999999/edit");
         $response->assertStatus(404);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 3]))->get("/api/users/{$randomUser->id}/edit");
+        $response->assertStatus(403);
     }
     public function testUpdate(): void
     {
@@ -71,6 +86,8 @@ class UsersTest extends TestCase
         $response->assertStatus(200);
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->put("/api/users/99999999/update");
         $response->assertStatus(404);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 3]))->put("/api/users/{$randomUser->id}/update");
+        $response->assertStatus(403);
     }
     public function testDelete(): void
     {
@@ -83,5 +100,7 @@ class UsersTest extends TestCase
         $response->assertStatus(200);
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->delete("/api/users/99999999/delete");
         $response->assertStatus(404);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 3]))->delete("/api/users/{$randomUser->id}/delete");
+        $response->assertStatus(403);
     }
 }

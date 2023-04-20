@@ -44,6 +44,15 @@ class DishesTest extends TestCase
         $response->assertStatus(200);
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->post('/api/dishes', []);
         $response->assertStatus(302);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 3]))->post('/api/dishes', [
+            'name' => "testName",
+            'img' => $fakeImg,
+            'category_id' => $dish->category_id,
+            'calories' => $dish->calories,
+            'price' => $dish->price,
+            'composition' => $dish->composition
+        ]);
+        $response->assertStatus(403);
     }
     public function testShow(): void
     {
@@ -58,6 +67,8 @@ class DishesTest extends TestCase
         $randDish = Dish::all()->random();
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get("/api/dishes/{$randDish->id}/edit");
         $response->assertStatus(200);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 3]))->get("/api/dishes/{$randDish->id}/edit");
+        $response->assertStatus(403);
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get("/api/dishes/99999999/edit");
         $response->assertStatus(404);
     }
@@ -83,6 +94,8 @@ class DishesTest extends TestCase
         $response->assertStatus(200);
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->put("/api/dishes/999999/update");
         $response->assertStatus(404);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 3]))->put("/api/dishes/{$randDish->id}/update");
+        $response->assertStatus(403);
     }
     public function testDelete(): void
     {
@@ -94,5 +107,7 @@ class DishesTest extends TestCase
         $response->assertStatus(200);
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->delete("/api/dishes/9999999/delete");
         $response->assertStatus(404);
+        $response = $this->actingAs(User::factory()->create(['role_id' => 3]))->delete("/api/dishes/{$randDish->id}/delete");
+        $response->assertStatus(403);
     }
 }
