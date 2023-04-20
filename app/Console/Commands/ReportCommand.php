@@ -33,7 +33,6 @@ class ReportCommand extends Command
         $total_orders = $orders->count();
         $total_profit = $orders->sum('total_cost');
 
-        $newReport = new Reports(['total_orders' => $total_orders, 'total_profit' => $total_profit]);
-        $newReport->save();
+        Reports::create(['total_orders' => $total_orders, 'total_profit' => $total_profit]);
     }
 }
