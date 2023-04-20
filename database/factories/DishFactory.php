@@ -22,8 +22,8 @@ class DishFactory extends Factory
         return [
             'name' => fake()->unique()->domainWord(),
             'img' => fake()->imageUrl(),
-            'calories' => fake()->randomDigitNotNull,
-            'price' => fake()->randomDigitNotNull,
+            'calories' => fake()->numberBetween(150, 5000),
+            'price' => fake()->numberBetween(150, 5000),
             'category_id' => Category::all()->random(),
             'composition' => fake()->text(200)
         ];
