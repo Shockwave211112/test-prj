@@ -10,6 +10,6 @@ class ReportPolicy
 
     public function view(User $user): bool
     {
-        return in_array($user->role_id, [Role::IS_SUPERADMIN, Role::IS_ADMIN]);
+        return in_array($user->role, [Role::IS_SUPERADMIN, Role::IS_ADMIN]);
     }
 }

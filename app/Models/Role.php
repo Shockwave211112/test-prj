@@ -11,9 +11,9 @@ class Role extends Model
 {
     use HasFactory;
     protected $table = 'roles';
-    public const IS_SUPERADMIN = 1;
-    public const IS_ADMIN = 2;
-    public const IS_WAITER = 3;
+    public const IS_SUPERADMIN = 'Super Admin';
+    public const IS_ADMIN = 'Admin';
+    public const IS_WAITER = 'Waiter';
     public function users(): HasMany
     {
         return $this->hasMany(Role::class);

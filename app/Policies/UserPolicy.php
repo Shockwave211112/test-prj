@@ -13,7 +13,7 @@ class UserPolicy
      */
     public function view(User $user, User $model): bool
     {
-        return in_array($user->role_id, [Role::IS_SUPERADMIN, Role::IS_ADMIN]);
+        return in_array($user->role, [Role::IS_SUPERADMIN, Role::IS_ADMIN]);
     }
 
     /**
@@ -21,7 +21,7 @@ class UserPolicy
      */
     public function create(User $user): bool
     {
-        return in_array($user->role_id, [Role::IS_SUPERADMIN, Role::IS_ADMIN]);
+        return in_array($user->role, [Role::IS_SUPERADMIN, Role::IS_ADMIN]);
     }
 
     /**
@@ -29,7 +29,7 @@ class UserPolicy
      */
     public function update(User $user, User $model): bool
     {
-        return in_array($user->role_id, [Role::IS_SUPERADMIN, Role::IS_ADMIN]);
+        return in_array($user->role, [Role::IS_SUPERADMIN, Role::IS_ADMIN]);
     }
 
     /**
@@ -37,7 +37,7 @@ class UserPolicy
      */
     public function delete(User $user, User $model): bool
     {
-        return in_array($user->role_id, [Role::IS_SUPERADMIN]);
+        return in_array($user->role, [Role::IS_SUPERADMIN]);
     }
 
 }

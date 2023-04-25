@@ -30,12 +30,15 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class, 'role_id', 'id');
     }
+    public function getRoleAttribute(): string
+    {
+        return $this->role()->first()->name;
+    }
     protected $hidden = [
         'password',
         'remember_token',
         'pin_code',
     ];
-
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
