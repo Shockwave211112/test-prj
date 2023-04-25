@@ -14,7 +14,8 @@ class ImgService
         if($data->hasFile('img'))
         {
             $image = $data->file('img');
-            $path = Storage::putFile('img/'.$type, new File($image));
+            $path = Storage::putFile('public/'.$type, new File($image));
+            $path = Storage::url(substr($path, 7));
             return $path;
         }
         else
@@ -40,6 +41,8 @@ class ImgService
     }
     public function deleteImage($oldData)
     {
-        Storage::delete($oldData);
+        $path = substr($oldData, 8);
+        $path = "/public" . $path;
+        Storage::delete($path);
     }
 }

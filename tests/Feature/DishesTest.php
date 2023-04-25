@@ -16,7 +16,8 @@ class DishesTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->seed();
+        $this->artisan('db:seed');
+        $this->artisan('db:seed --class TestSeeder');
     }
     public function testIndex(): void
     {

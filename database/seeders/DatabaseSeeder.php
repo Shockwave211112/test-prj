@@ -32,10 +32,5 @@ class DatabaseSeeder extends Seeder
             'pin_code' => 1111,
             'role_id' => 1
         ]);
-        User::factory(10)->create();
-        Category::factory(5)->create();
-        Dish::factory(10)->create();
-        Order::factory(3)->create();
-        DishOrder::factory(10)->create();
     }
 }

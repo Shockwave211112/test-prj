@@ -12,6 +12,7 @@ use App\Services\ImgService;
 class CategoryController extends Controller
 {
     public $service;
+
     public function __construct(ImgService $service)
     {
         $this->service = $service;

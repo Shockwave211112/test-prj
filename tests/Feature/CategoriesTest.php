@@ -18,6 +18,7 @@ class CategoriesTest extends TestCase
     {
         parent::setUp();
         $this->artisan('db:seed');
+        $this->artisan('db:seed --class TestSeeder');
     }
     public function testIndex(): void
     {

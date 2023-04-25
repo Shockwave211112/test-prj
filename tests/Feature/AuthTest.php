@@ -6,14 +6,7 @@ use App\Models\ResetPin;
 use App\Models\User;
 use Hash;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
-use Mockery;
-use Mockery\Matcher\Closure;
-use PhpParser\PrettyPrinter\Standard;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
@@ -23,6 +16,7 @@ class AuthTest extends TestCase
     {
         parent::setUp();
         $this->artisan('db:seed');
+        $this->artisan('db:seed --class TestSeeder');
     }
     public function testRegister(): void
     {

@@ -18,7 +18,8 @@ class OrdersTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->seed('DatabaseSeeder');
+        $this->artisan('db:seed');
+        $this->artisan('db:seed --class TestSeeder');
     }
     public function testIndex(): void
     {
