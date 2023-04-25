@@ -1,0 +1,16 @@
+2023-04-25 11:22:14,159 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2023-04-25 11:22:14,159 WARN No file matches via include "/etc/supervisor/conf.d/*.conf"
+2023-04-25 11:22:14,160 INFO supervisord started with pid 1
+2023-04-25 11:22:15,164 INFO spawned: 'app' with pid 6
+2023-04-25 11:22:16,166 INFO success: app entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2023-04-25 11:24:52,345 WARN received SIGQUIT indicating exit request
+2023-04-25 11:24:52,345 INFO waiting for app to die
+2023-04-25 11:24:52,346 INFO stopped: app (terminated by SIGTERM)
+2023-04-25 11:24:54,934 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2023-04-25 11:24:54,934 WARN No file matches via include "/etc/supervisor/conf.d/*.conf"
+2023-04-25 11:24:54,935 INFO supervisord started with pid 1
+2023-04-25 11:24:55,939 INFO spawned: 'app' with pid 7
+2023-04-25 11:24:56,941 INFO success: app entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2023-04-25 11:25:19,970 WARN received SIGQUIT indicating exit request
+2023-04-25 11:25:19,970 INFO waiting for app to die
+2023-04-25 11:25:19,971 INFO stopped: app (terminated by SIGTERM)

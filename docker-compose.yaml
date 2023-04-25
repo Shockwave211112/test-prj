@@ -13,6 +13,7 @@ services:
       - ./:/var/www/laravel-docker
 
   php:
+    tty: true
     build:
       context: .
       dockerfile: docker/php.dockerfile
@@ -21,8 +22,8 @@ services:
       - ./.env.docker:/var/www/laravel-docker/.env
     links:
       - postgres
-    entrypoint:
-      - /var/www/laravel-docker/docker/run.sh
+#    entrypoint:
+#      - /var/www/laravel-docker/docker/run.sh
 
   postgres:
     image: postgres
@@ -42,9 +43,3 @@ services:
     restart: always
     ports:
       - 8080:8080
-#
-#  commands:
-#    build:
-#      context: .
-#    entrypoint:
-#      - /var/www/laravel-docker/docker/run.sh
