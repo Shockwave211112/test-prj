@@ -25,7 +25,7 @@ class FilterRequest extends FormRequest
         return [
             'name'  => ['string'],
             'email' => ['string'],
-            'role_id'  => [Rule::in([1, 2, 3])],
+            'role_id'  => ['exists:roles,id'],
         ];
     }
 }

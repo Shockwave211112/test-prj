@@ -27,7 +27,7 @@ class RegisterRequest extends FormRequest
             'email' => ['required', 'email', 'max:254', 'unique:users'],
             'password' => ['required', 'string', 'max:254', 'confirmed'],
             'pin_code' => ['required', 'digits:4', 'unique:users'],
-            'role_id'  => ['required', Rule::in([1, 2, 3])],
+            'role_id'  => ['required', 'exists:roles,id'],
         ];
     }
 }
