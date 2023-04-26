@@ -9,7 +9,7 @@ class OrderPolicy
 {
     public function view(User $user): bool
     {
-        return in_array($user->role, [Role::IS_SUPERADMIN, Role::IS_ADMIN]);
+        return in_array($user->role, [Role::IS_SUPERADMIN, Role::IS_ADMIN, Role::IS_WAITER]);
     }
 
     public function create(User $user): bool
