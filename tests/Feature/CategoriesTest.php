@@ -39,7 +39,8 @@ class CategoriesTest extends TestCase
             'name' => $category->name
         ]);
         $category = Category::all()->last();
-        Storage::disk('local')->assertExists($category->img);
+        $path = substr($category->img, 8);
+        Storage::disk('local')->assertExists('public' .  $path);
         $response->assertStatus(200);
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->post('/api/categories', []);
         $response->assertStatus(302);
@@ -81,7 +82,8 @@ class CategoriesTest extends TestCase
             'name' => $category->name
         ]);
         $category = Category::where('name', '=', $category->name)->first();
-        Storage::disk('local')->assertExists($category->img);
+        $path = substr($category->img, 8);
+        Storage::disk('local')->assertExists('public' .  $path);
         $response->assertStatus(200);
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->put("/api/categories/999999/update");
         $response->assertStatus(404);

@@ -41,7 +41,8 @@ class DishesTest extends TestCase
             'name' => $dish->name
         ]);
         $dish = Dish::all()->last();
-        Storage::disk('local')->assertExists($dish->img);
+        $path = substr($dish->img, 8);
+        Storage::disk('local')->assertExists('public' .  $path);
         $response->assertStatus(200);
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->post('/api/dishes', []);
         $response->assertStatus(302);
@@ -91,7 +92,8 @@ class DishesTest extends TestCase
             'name' => $dish->name,
         ]);
         $dish = Dish::where('name', '=', $dish->name)->first();
-        Storage::disk('local')->assertExists($dish->img);
+        $path = substr($dish->img, 8);
+        Storage::disk('local')->assertExists('public' .  $path);
         $response->assertStatus(200);
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->put("/api/dishes/999999/update");
         $response->assertStatus(404);
