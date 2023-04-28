@@ -61,7 +61,12 @@ class OrderController extends Controller
     {
         $this->authorize('create', Order::class);
         $data = $request->validated();
-        $order = Order::create($data);
+        $number = random_int(10000, 99999);
+        while(Order::where('number', '=', $number)->first() != null)
+        {
+            $number = random_int(10000, 99999);
+        }
+        $order = Order::create(['number' => $number, 'user_id' => $data['user_id']]);
         if ($order)
         {
             return response()->json([

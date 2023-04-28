@@ -20,10 +20,10 @@ class NewPasswordController extends Controller
         $user = User::where('email', $data['email'])->first();
         if($user)
         {
-            $pin_code = random_int(100000, 999999);
+            $pin_code = random_int(1, 999999);
             while(ResetPin::where('pin_code', '=', $pin_code)->first() != null)
             {
-                $pin_code = random_int(100000, 999999);
+                $pin_code = random_int(1, 999999);
             }
             Mail::to($data['email'])->send(new PasswordMail($pin_code));
             ResetPin::create([

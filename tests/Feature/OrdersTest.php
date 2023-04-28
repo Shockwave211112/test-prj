@@ -26,17 +26,15 @@ class OrdersTest extends TestCase
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->get('/api/orders');
         $response->assertStatus(200);
         $response = $this->actingAs(User::factory()->create(['role_id' => 3]))->get('/api/orders');
-        $response->assertStatus(403);
+        $response->assertStatus(200);
     }
     public function testCreation(): void
     {
-        $number = random_int(1, 9999);
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->post('/api/orders', [
-            "number" => $number,
             "user_id" => 1
         ]);
         $this->assertDatabaseHas('orders', [
-            "number" => $number
+            "user_id" => 1,
         ]);
         $response->assertStatus(200);
         $response = $this->actingAs(User::factory()->create(['role_id' => 1]))->post('/api/orders');

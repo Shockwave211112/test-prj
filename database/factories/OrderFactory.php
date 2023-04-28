@@ -20,7 +20,7 @@ class OrderFactory extends Factory
     public function definition(): array
     {
         return [
-            'number' => random_int(1, 9999),
+            'number' => random_int(1, 999999),
             'user_id' => User::all()->random(),
             'count' => random_int(1, 20),
             'total_cost' => random_int(1, 99999)
