@@ -1859,9 +1859,6 @@ components:
     StoreOrderRequest:
       type: object
       properties:
-        number:
-          type: string
-          example: 652A
         user_id:
           type: integer
           example: 3
